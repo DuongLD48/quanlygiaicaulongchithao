@@ -1,7 +1,6 @@
 import React from 'react';
 import { useTournament } from '../../context/TournamentContext';
 import {
-  MapPin,
   Search,
   X,
   BookOpen,
@@ -35,34 +34,12 @@ export const Header: React.FC<Props> = ({
   searchQuery,
   onSearchChange,
 }) => {
-  const { tournament, isAdmin } = useTournament();
+  const { isAdmin } = useTournament();
 
   return (
     <header className="bg-[#091120]/95 backdrop-blur-md border-b border-[#14233a] sticky top-0 z-40 shadow-xl">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 space-y-2.5">
-        {/* Row 1: Brand Logo & Tournament Title */}
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-black font-black text-sm shrink-0 shadow-md shadow-cyan-500/20">
-            🏸
-          </div>
-          <div className="min-w-0">
-            <h1 className="font-black text-xs sm:text-sm text-white tracking-wide truncate">
-              {tournament ? tournament.name : 'Giải Cầu Lông'}
-            </h1>
-            <div className="flex items-center gap-2 text-[10px] text-slate-400">
-              <span className="flex items-center gap-1 truncate">
-                <MapPin className="w-3 h-3 text-cyan-400" />
-                {tournament ? tournament.location : 'CLB Cầu Lông'}
-              </span>
-              {tournament && (
-                <span className="hidden sm:inline-block text-slate-500">• {tournament.courts.length} Sân</span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Row 2: Nav Tabs + Search Bar (Single unified navigation line) */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-1 border-t border-[#14233a]">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
           {/* Left: Primary Navigation Tabs */}
           <nav className="flex items-center space-x-1 sm:space-x-1.5 overflow-x-auto py-0.5 scrollbar-none">
             {/* Tab: Thể lệ */}
