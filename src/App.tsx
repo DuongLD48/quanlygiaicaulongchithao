@@ -13,6 +13,7 @@ import {
   GroupAndTeamManager,
   FixtureManager,
   KnockoutManager,
+  AdminAuthModal,
 } from './components/admin';
 import {
   AlertOctagon,
@@ -20,6 +21,7 @@ import {
   Database,
   Lock,
   Sparkles,
+  ShieldCheck,
 } from 'lucide-react';
 
 const TournamentDashboard: React.FC = () => {
@@ -37,6 +39,7 @@ const TournamentDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<MainTab>('STANDINGS');
   const [searchQuery, setSearchQuery] = useState('');
   const [isInitializing, setIsInitializing] = useState(false);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
 
   // Chọn Category hợp lệ
   const activeCategory = tournament
@@ -260,11 +263,31 @@ const TournamentDashboard: React.FC = () => {
       <footer className="bg-[#08101c] border-t border-[#14233a] py-4 mt-auto text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p>© 2026 {tournament.name} • CLB Cầu Lông Chí Thảo</p>
-          <p className="text-slate-400 text-[11px]">
-            Hệ thống quản lý giải đấu thời gian thực • Đồng bộ Firebase Realtime
-          </p>
+          <button
+            type="button"
+            onClick={() => setIsAdminModalOpen(true)}
+            className="text-slate-400 hover:text-cyan-400 transition flex items-center gap-1.5 text-xs font-semibold cursor-pointer"
+          >
+            {isAdmin ? (
+              <>
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-emerald-400">Ban tổ chức (Quản trị viên)</span>
+              </>
+            ) : (
+              <>
+                <Lock className="w-3.5 h-3.5 text-slate-500" />
+                <span>Ban tổ chức</span>
+              </>
+            )}
+          </button>
         </div>
       </footer>
+
+      {/* Admin Auth Modal */}
+      <AdminAuthModal
+        isOpen={isAdminModalOpen}
+        onClose={() => setIsAdminModalOpen(false)}
+      />
     </div>
   );
 };
