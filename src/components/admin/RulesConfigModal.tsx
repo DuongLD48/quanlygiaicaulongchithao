@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Category, MatchRule, StageRuleConfig } from '../../models';
-import { Settings, X, Sliders, Check } from 'lucide-react';
+import { X, Sliders, Check } from 'lucide-react';
 
 interface Props {
   category: Category;
@@ -70,41 +70,41 @@ export const RulesConfigModal: React.FC<Props> = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
+      <div className="bg-[#0c1524] rounded-3xl shadow-2xl max-w-2xl w-full border border-[#16263f] overflow-hidden flex flex-col max-h-[90vh] text-slate-100">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50/50">
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
-              <Sliders className="w-5 h-5" />
+        <div className="flex items-center justify-between p-4 bg-[#091120] border-b border-[#16263f]">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 flex items-center justify-center">
+              <Sliders className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-800">
+              <h3 className="text-xs sm:text-sm font-black text-white uppercase tracking-wider">
                 Tùy Chỉnh Thể Thức Thi Đấu
               </h3>
-              <p className="text-xs text-slate-500">
-                Nội dung: <span className="font-semibold text-indigo-600">{category.name}</span>
+              <p className="text-[10px] text-slate-400">
+                Nội dung: <span className="font-bold text-cyan-300">{category.name}</span>
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg"
+            className="w-7 h-7 rounded-lg bg-[#121f33] hover:bg-[#1a2b45] text-slate-400 hover:text-white flex items-center justify-center transition"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Tabs for Stage / Round */}
-        <div className="flex overflow-x-auto border-b border-slate-200 bg-slate-100/60 px-4 pt-2 gap-1">
+        <div className="flex overflow-x-auto border-b border-[#16263f] bg-[#070d19] px-4 pt-2 gap-1 scrollbar-none">
           {tabs.map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-3.5 py-2 text-xs font-semibold whitespace-nowrap rounded-t-lg transition border-t-2 ${
+              className={`px-3 py-1.5 text-xs font-bold whitespace-nowrap rounded-t-lg transition border-t-2 cursor-pointer ${
                 activeTab === tab.key
-                  ? 'bg-white text-indigo-600 border-indigo-600 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 border-transparent hover:bg-slate-200/50'
+                  ? 'bg-[#0c1524] text-cyan-400 border-cyan-400 shadow-sm'
+                  : 'text-slate-400 hover:text-white border-transparent hover:bg-[#091120]'
               }`}
             >
               {tab.label}
@@ -116,140 +116,122 @@ export const RulesConfigModal: React.FC<Props> = ({
         </div>
 
         {/* Body Settings */}
-        <div className="p-6 overflow-y-auto space-y-6 flex-1">
+        <div className="p-5 overflow-y-auto space-y-5 flex-1 text-xs">
           {/* Presets */}
-          <div>
-            <label className="text-xs font-bold text-slate-600 uppercase tracking-wider block mb-2">
-              Chọn mẫu định dạng nhanh:
-            </label>
-            <div className="grid grid-cols-3 gap-2.5">
+          <div className="space-y-2">
+            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+              Mẫu Thiết Lập Nhanh:
+            </span>
+            <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => handleApplyPreset('1c_31')}
-                className={`p-3 rounded-xl border text-left transition ${
-                  currentRule.setsCount === 1 && currentRule.pointsPerSet === 31
-                    ? 'border-indigo-600 bg-indigo-50/50 text-indigo-900'
-                    : 'border-slate-200 hover:border-slate-300 bg-white text-slate-700'
-                }`}
+                className="p-2.5 rounded-xl border border-[#16263f] bg-[#091120] hover:border-cyan-500/50 hover:bg-[#11233e] text-left transition"
               >
-                <div className="font-bold text-sm">1 Set 31 Điểm</div>
-                <div className="text-xs text-slate-500">Đánh 1 set chạm 31 (Không deuce)</div>
+                <div className="font-bold text-white text-xs">1 Set 31 Điểm</div>
+                <div className="text-[10px] text-slate-400">Không deuce (Chạm 31 thắng)</div>
               </button>
-
               <button
                 type="button"
                 onClick={() => handleApplyPreset('3c_21')}
-                className={`p-3 rounded-xl border text-left transition ${
-                  currentRule.setsCount === 3 && currentRule.pointsPerSet === 21
-                    ? 'border-indigo-600 bg-indigo-50/50 text-indigo-900'
-                    : 'border-slate-200 hover:border-slate-300 bg-white text-slate-700'
-                }`}
+                className="p-2.5 rounded-xl border border-[#16263f] bg-[#091120] hover:border-cyan-500/50 hover:bg-[#11233e] text-left transition"
               >
-                <div className="font-bold text-sm">3 Set 21 Điểm</div>
-                <div className="text-xs text-slate-500">Thắng 2 set 21 (Deuce, trần 30)</div>
+                <div className="font-bold text-white text-xs">3 Set 21 Điểm (BWF)</div>
+                <div className="text-[10px] text-slate-400">Thắng 2 set, deuce trần 30</div>
               </button>
-
               <button
                 type="button"
                 onClick={() => handleApplyPreset('3c_15')}
-                className={`p-3 rounded-xl border text-left transition ${
-                  currentRule.setsCount === 3 && currentRule.pointsPerSet === 15
-                    ? 'border-indigo-600 bg-indigo-50/50 text-indigo-900'
-                    : 'border-slate-200 hover:border-slate-300 bg-white text-slate-700'
-                }`}
+                className="p-2.5 rounded-xl border border-[#16263f] bg-[#091120] hover:border-cyan-500/50 hover:bg-[#11233e] text-left transition"
               >
-                <div className="font-bold text-sm">3 Set 15 Điểm</div>
-                <div className="text-xs text-slate-500">Thắng 2 set 15 (Deuce, trần 21)</div>
+                <div className="font-bold text-white text-xs">3 Set 15 Điểm Rút Gọn</div>
+                <div className="text-[10px] text-slate-400">Thắng 2 set, deuce trần 21</div>
               </button>
             </div>
           </div>
 
           {/* Detailed Inputs */}
-          <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-4">
-            <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-              <Settings className="w-4 h-4 text-slate-500" />
-              Chi Tiết Cấu Hình Cho {tabs.find((t) => t.key === activeTab)?.label}
+          <div className="p-4 bg-[#091120] rounded-2xl border border-[#16263f] space-y-4">
+            <h4 className="font-black text-white text-xs uppercase tracking-wide text-cyan-300">
+              Chi Tiết Cho: {tabs.find((t) => t.key === activeTab)?.label}
             </h4>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Số set thi đấu:
+                <label className="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">
+                  Số Set Đấu
                 </label>
                 <select
                   value={currentRule.setsCount}
-                  onChange={(e) => updateCurrentRule({ setsCount: parseInt(e.target.value, 10) })}
-                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  onChange={(e) => updateCurrentRule({ setsCount: parseInt(e.target.value, 10) as 1 | 3 })}
+                  className="w-full px-3 py-1.5 bg-[#070d19] border border-[#16263f] rounded-lg text-xs text-white focus:border-cyan-400 focus:outline-none"
                 >
-                  <option value={1}>1 Set (Đánh 1 hiệp duy nhất)</option>
-                  <option value={3}>3 Set (Đội thắng 2 set trước là thắng)</option>
+                  <option value={1}>1 Set (Thắng 1)</option>
+                  <option value={3}>3 Set (Thắng 2)</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Điểm số chuẩn mỗi set:
+                <label className="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">
+                  Điểm Chạm Mỗi Set
                 </label>
                 <input
                   type="number"
-                  min={11}
+                  min={5}
                   max={50}
                   value={currentRule.pointsPerSet}
-                  onChange={(e) => updateCurrentRule({ pointsPerSet: parseInt(e.target.value, 10) || 21 })}
-                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  onChange={(e) => updateCurrentRule({ pointsPerSet: parseInt(e.target.value, 10) })}
+                  className="w-full px-3 py-1.5 bg-[#070d19] border border-[#16263f] rounded-lg text-xs text-white focus:border-cyan-400 focus:outline-none"
                 />
               </div>
+            </div>
 
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Điểm trần tối đa (Max Points):
-                </label>
+            <div className="grid grid-cols-2 gap-3 pt-1 border-t border-[#16263f]">
+              <div className="flex items-center gap-2">
                 <input
-                  type="number"
-                  min={currentRule.pointsPerSet}
-                  max={50}
-                  value={currentRule.maxPoints}
-                  onChange={(e) => updateCurrentRule({ maxPoints: parseInt(e.target.value, 10) || 30 })}
-                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  type="checkbox"
+                  id="deuceEnabled"
+                  checked={currentRule.deuceEnabled}
+                  onChange={(e) => updateCurrentRule({ deuceEnabled: e.target.checked })}
+                  className="w-4 h-4 rounded text-cyan-500 bg-[#070d19] border-[#16263f]"
                 />
-                <span className="text-[10px] text-slate-400">
-                  Khi tỷ số chạm mốc này, bên chạm trước thắng ngay lập tức.
-                </span>
+                <label htmlFor="deuceEnabled" className="text-xs font-semibold text-slate-300 cursor-pointer">
+                  Áp dụng cách biệt 2 điểm (Deuce)
+                </label>
               </div>
 
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Luật Deuce (Cách biệt 2 điểm):
-                </label>
-                <label className="flex items-center gap-2 mt-2 cursor-pointer">
+              {currentRule.deuceEnabled && (
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">
+                    Điểm Trần Tối Đa
+                  </label>
                   <input
-                    type="checkbox"
-                    checked={currentRule.deuceEnabled}
-                    onChange={(e) => updateCurrentRule({ deuceEnabled: e.target.checked })}
-                    className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500"
+                    type="number"
+                    min={currentRule.pointsPerSet}
+                    max={50}
+                    value={currentRule.maxPoints}
+                    onChange={(e) => updateCurrentRule({ maxPoints: parseInt(e.target.value, 10) })}
+                    className="w-full px-3 py-1.5 bg-[#070d19] border border-[#16263f] rounded-lg text-xs text-white focus:border-cyan-400 focus:outline-none"
                   />
-                  <span className="text-xs text-slate-700 font-medium">
-                    Bật luật deuce (Phải cách biệt 2 điểm)
-                  </span>
-                </label>
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-4 border-t border-slate-100 bg-slate-50/50">
+        <div className="flex items-center justify-between p-4 border-t border-[#16263f] bg-[#091120]">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 border border-slate-300 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-100 transition"
+            className="px-4 py-1.5 border border-[#16263f] text-slate-400 hover:text-white rounded-xl text-xs font-semibold"
           >
-            Đóng
+            Hủy
           </button>
           <button
             type="button"
             onClick={handleSave}
-            className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold shadow-md shadow-indigo-100 flex items-center gap-1.5 transition"
+            className="px-5 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-black font-black rounded-xl text-xs shadow-lg shadow-cyan-600/25 transition cursor-pointer flex items-center gap-1.5"
           >
             <Check className="w-4 h-4" />
             Lưu Thể Thức

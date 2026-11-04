@@ -26,24 +26,15 @@ export const MatchesView: React.FC<Props> = ({ category, searchQuery = '' }) => 
 
   const isLocked = !isRealtimeConnected || !!connectionError;
 
-  // Lấy tất cả trận đấu trong nội dung (Cả Vòng bảng và Knockout)
+  // Lấy tất cả trận đấu trong nội dung
   const allMatches = category.getAllMatches();
-
   const query = searchQuery.toLowerCase().trim();
 
   // Lọc danh sách trận đấu
   const filteredMatches = allMatches.filter((match) => {
-    // Lọc theo Sân
-    if (courtFilter !== 'ALL' && match.court !== courtFilter) {
-      return false;
-    }
+    if (courtFilter !== 'ALL' && match.court !== courtFilter) return false;
+    if (statusFilter !== 'ALL' && match.status !== statusFilter) return false;
 
-    // Lọc theo Trạng thái
-    if (statusFilter !== 'ALL' && match.status !== statusFilter) {
-      return false;
-    }
-
-    // Lọc theo Từ khóa tìm kiếm (tên VĐV, tên đội, bảng đấu, mã trận, sân)
     if (query) {
       const matchCodeMatch = match.matchCode.toLowerCase().includes(query);
       const roundMatch = match.roundName.toLowerCase().includes(query);
@@ -69,7 +60,6 @@ export const MatchesView: React.FC<Props> = ({ category, searchQuery = '' }) => 
       alert('Không thể lưu điểm: Đang mất kết nối tới Firebase Database!');
       return;
     }
-    // Tìm trong groups
     let found = false;
     for (const group of category.groups) {
       const idx = group.matches.findIndex((m) => m.id === updatedMatch.id);
@@ -80,7 +70,6 @@ export const MatchesView: React.FC<Props> = ({ category, searchQuery = '' }) => 
       }
     }
 
-    // Nếu không có trong groups thì tìm trong knockout
     if (!found) {
       const koIdx = category.knockoutMatches.findIndex((m) => m.id === updatedMatch.id);
       if (koIdx !== -1) {
@@ -92,13 +81,15 @@ export const MatchesView: React.FC<Props> = ({ category, searchQuery = '' }) => 
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Top Filter Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-[#0c1524] p-4 rounded-2xl shadow-xl border border-[#16263f]">
         <div className="flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-indigo-600" />
-          <h3 className="font-bold text-slate-800 text-base">Lịch & Tỉ Số Trực Tiếp</h3>
-          <span className="text-xs px-2 py-0.5 bg-slate-100 text-slate-600 font-bold rounded-full">
+          <Calendar className="w-4 h-4 text-cyan-400" />
+          <h3 className="font-black text-white text-xs uppercase tracking-wide">
+            Nhập Tỷ Số & Quản Lý Trận Đấu ({category.name})
+          </h3>
+          <span className="text-[11px] px-2 py-0.5 bg-[#101e33] border border-[#1d3252] text-cyan-300 font-bold rounded-md">
             {filteredMatches.length} trận
           </span>
         </div>
@@ -106,14 +97,14 @@ export const MatchesView: React.FC<Props> = ({ category, searchQuery = '' }) => 
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-2">
           {/* Lọc theo Sân */}
-          <div className="flex items-center gap-1.5 text-xs text-slate-600">
-            <Filter className="w-3.5 h-3.5 text-slate-400" />
+          <div className="flex items-center gap-1.5 text-xs text-slate-400">
+            <Filter className="w-3.5 h-3.5 text-slate-500" />
             <select
               value={courtFilter}
               onChange={(e) => setCourtFilter(e.target.value)}
-              className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              className="px-2.5 py-1 bg-[#091120] border border-[#16263f] text-slate-200 rounded-lg text-xs font-semibold focus:border-cyan-400 focus:outline-none"
             >
-              <option value="ALL">Tất cả sân đấu</option>
+              <option value="ALL">Tất cả sân</option>
               {tournament?.courts?.map((c) => (
                 <option key={c} value={c}>
                   {c}
@@ -123,11 +114,11 @@ export const MatchesView: React.FC<Props> = ({ category, searchQuery = '' }) => 
           </div>
 
           {/* Lọc theo Trạng thái */}
-          <div className="flex items-center gap-1.5 text-xs text-slate-600">
+          <div className="flex items-center gap-1.5 text-xs text-slate-400">
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              className="px-2.5 py-1 bg-[#091120] border border-[#16263f] text-slate-200 rounded-lg text-xs font-semibold focus:border-cyan-400 focus:outline-none"
             >
               <option value="ALL">Tất cả trạng thái</option>
               <option value="PLAYING">Đang thi đấu</option>
@@ -140,92 +131,84 @@ export const MatchesView: React.FC<Props> = ({ category, searchQuery = '' }) => 
 
       {/* Grid danh sách trận đấu */}
       {filteredMatches.length === 0 ? (
-        <div className="p-12 text-center text-slate-400 text-sm bg-white rounded-2xl border border-dashed border-slate-200 space-y-2">
-          <Calendar className="w-8 h-8 mx-auto text-slate-300" />
-          <p className="font-semibold text-slate-600">Không tìm thấy trận đấu nào phù hợp.</p>
-          <p className="text-xs text-slate-400">
-            Thử thay đổi bộ lọc sân, trạng thái hoặc từ khóa tìm kiếm.
-          </p>
+        <div className="p-12 text-center text-slate-500 text-xs bg-[#0c1524] rounded-2xl border border-[#16263f] space-y-2">
+          <Calendar className="w-8 h-8 mx-auto text-slate-600" />
+          <p className="font-bold text-slate-400">Không tìm thấy trận đấu nào phù hợp.</p>
+          <p className="text-slate-600">Thử thay đổi bộ lọc sân, trạng thái hoặc từ khóa tìm kiếm.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredMatches.map((match) => {
             const isPlaying = match.status === 'PLAYING';
             const isFinished = match.status === 'FINISHED';
+            const teamAWon = match.winnerId === match.teamA?.id;
+            const teamBWon = match.winnerId === match.teamB?.id;
 
             return (
               <div
                 key={match.id}
-                className={`bg-white rounded-2xl border p-4 shadow-sm hover:shadow transition flex flex-col justify-between ${
+                className={`bg-[#0c1524] rounded-2xl border p-4 shadow-xl transition flex flex-col justify-between ${
                   isPlaying
-                    ? 'border-amber-300 ring-2 ring-amber-400/20 bg-amber-50/20'
+                    ? 'border-amber-400/80 ring-2 ring-amber-400/20'
                     : isFinished
-                    ? 'border-slate-200'
-                    : 'border-slate-200'
+                    ? 'border-cyan-500/40'
+                    : 'border-[#16263f]'
                 }`}
               >
-                {/* Header Card: Mã trận, Vòng, Sân, Giờ */}
-                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                {/* Header Card */}
+                <div className="flex items-center justify-between pb-2.5 border-b border-[#16263f]">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded">
+                    <span className="font-mono text-[10px] font-black text-cyan-300 bg-[#101e33] border border-[#1d3252] px-2 py-0.5 rounded">
                       {match.matchCode}
                     </span>
-                    <span className="text-xs font-semibold text-slate-600 line-clamp-1">
+                    <span className="text-xs font-bold text-slate-300 truncate max-w-[150px]">
                       {match.roundName}
                     </span>
                   </div>
 
-                  {/* Badge Trạng thái */}
                   {isPlaying ? (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full animate-pulse">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-300 bg-amber-950/80 border border-amber-500/40 px-2 py-0.5 rounded-full animate-pulse">
                       <Play className="w-2.5 h-2.5 fill-current" /> Đang đấu
                     </span>
                   ) : isFinished ? (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
-                      <CheckCircle2 className="w-2.5 h-2.5" /> Hoàn thành
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-2 py-0.5 rounded-full">
+                      <CheckCircle2 className="w-2.5 h-2.5" /> Xong
                     </span>
                   ) : (
-                    <span className="text-[10px] font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
-                      Sắp diễn ra
+                    <span className="text-[10px] font-semibold text-slate-500 bg-[#091120] px-2 py-0.5 rounded-full border border-[#16263f]">
+                      Sắp đấu
                     </span>
                   )}
                 </div>
 
-                {/* Score Board Giữa 2 Đội */}
-                <div className="py-4 space-y-2.5">
+                {/* Score Board */}
+                <div className="py-3 space-y-2">
                   {/* Đội A */}
-                  <div className="flex items-center justify-between gap-3">
+                  <div className={`flex items-center justify-between p-2 rounded-xl transition ${
+                    teamAWon ? 'bg-cyan-950/40 border border-cyan-500/30' : 'bg-[#091120]'
+                  }`}>
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      {match.winnerId === match.teamA?.id && (
-                        <Trophy className="w-4 h-4 text-amber-500 shrink-0" />
-                      )}
-                      <div>
-                        <div
-                          className={`text-sm truncate ${
-                            match.winnerId === match.teamA?.id
-                              ? 'font-extrabold text-indigo-900'
-                              : 'font-semibold text-slate-800'
-                          }`}
-                        >
+                      {teamAWon && <Trophy className="w-3.5 h-3.5 text-amber-400 shrink-0" />}
+                      <div className="min-w-0">
+                        <div className={`text-xs truncate ${teamAWon ? 'font-black text-white' : 'font-semibold text-slate-300'}`}>
                           {match.teamA?.getDisplayName() || 'Chờ xác định'}
                         </div>
                         {match.teamA?.players && match.teamA.players.length > 0 && (
-                          <div className="text-[10px] text-slate-400 truncate">
+                          <div className="text-[10px] text-slate-500 truncate">
                             {match.teamA.players.map((p) => p.fullName).join(' • ')}
                           </div>
                         )}
                       </div>
                     </div>
 
-                    {/* Điểm các set của Đội A */}
-                    <div className="flex items-center gap-1.5 shrink-0">
+                    <div className="flex items-center gap-1 font-mono font-black shrink-0">
                       {match.scores.map((set, sIdx) => (
                         <span
                           key={sIdx}
-                          className={`w-7 h-7 flex items-center justify-center font-mono text-sm font-bold rounded-lg ${
+                          className={`w-6 h-6 flex items-center justify-center text-xs rounded-md ${
                             match.rule.getSetWinner(set.teamA, set.teamB) === 'A'
-                              ? 'bg-indigo-600 text-white shadow-sm'
-                              : 'bg-slate-100 text-slate-600'
+                              ? 'bg-cyan-500 text-black font-extrabold'
+                              : 'bg-[#101e33] text-slate-400'
                           }`}
                         >
                           {set.teamA}
@@ -235,38 +218,31 @@ export const MatchesView: React.FC<Props> = ({ category, searchQuery = '' }) => 
                   </div>
 
                   {/* Đội B */}
-                  <div className="flex items-center justify-between gap-3">
+                  <div className={`flex items-center justify-between p-2 rounded-xl transition ${
+                    teamBWon ? 'bg-cyan-950/40 border border-cyan-500/30' : 'bg-[#091120]'
+                  }`}>
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      {match.winnerId === match.teamB?.id && (
-                        <Trophy className="w-4 h-4 text-amber-500 shrink-0" />
-                      )}
-                      <div>
-                        <div
-                          className={`text-sm truncate ${
-                            match.winnerId === match.teamB?.id
-                              ? 'font-extrabold text-indigo-900'
-                              : 'font-semibold text-slate-800'
-                          }`}
-                        >
+                      {teamBWon && <Trophy className="w-3.5 h-3.5 text-amber-400 shrink-0" />}
+                      <div className="min-w-0">
+                        <div className={`text-xs truncate ${teamBWon ? 'font-black text-white' : 'font-semibold text-slate-300'}`}>
                           {match.teamB?.getDisplayName() || 'Chờ xác định'}
                         </div>
                         {match.teamB?.players && match.teamB.players.length > 0 && (
-                          <div className="text-[10px] text-slate-400 truncate">
+                          <div className="text-[10px] text-slate-500 truncate">
                             {match.teamB.players.map((p) => p.fullName).join(' • ')}
                           </div>
                         )}
                       </div>
                     </div>
 
-                    {/* Điểm các set của Đội B */}
-                    <div className="flex items-center gap-1.5 shrink-0">
+                    <div className="flex items-center gap-1 font-mono font-black shrink-0">
                       {match.scores.map((set, sIdx) => (
                         <span
                           key={sIdx}
-                          className={`w-7 h-7 flex items-center justify-center font-mono text-sm font-bold rounded-lg ${
+                          className={`w-6 h-6 flex items-center justify-center text-xs rounded-md ${
                             match.rule.getSetWinner(set.teamA, set.teamB) === 'B'
-                              ? 'bg-indigo-600 text-white shadow-sm'
-                              : 'bg-slate-100 text-slate-600'
+                              ? 'bg-cyan-500 text-black font-extrabold'
+                              : 'bg-[#101e33] text-slate-400'
                           }`}
                         >
                           {set.teamB}
@@ -276,18 +252,18 @@ export const MatchesView: React.FC<Props> = ({ category, searchQuery = '' }) => 
                   </div>
                 </div>
 
-                {/* Footer Card: Địa điểm, Giờ & Quyền Admin Nhập Điểm */}
-                <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-xs text-slate-500">
-                  <div className="flex items-center gap-3">
+                {/* Footer Card */}
+                <div className="flex items-center justify-between pt-2.5 border-t border-[#16263f] text-xs text-slate-400">
+                  <div className="flex items-center gap-3 text-[11px]">
                     {match.court && (
                       <span className="flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                        <MapPin className="w-3 h-3 text-slate-500" />
                         {match.court}
                       </span>
                     )}
                     {match.scheduledTime && (
                       <span className="flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-slate-400" />
+                        <Clock className="w-3 h-3 text-slate-500" />
                         {match.scheduledTime}
                       </span>
                     )}
@@ -298,10 +274,10 @@ export const MatchesView: React.FC<Props> = ({ category, searchQuery = '' }) => 
                       type="button"
                       disabled={isLocked}
                       onClick={() => setScoringMatch(match)}
-                      className={`px-2.5 py-1 font-bold rounded-lg transition text-xs ${
+                      className={`px-3 py-1 font-bold rounded-lg transition text-xs cursor-pointer ${
                         isLocked
-                          ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                          : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 cursor-pointer'
+                          ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                          : 'bg-cyan-600 hover:bg-cyan-500 text-black shadow-md shadow-cyan-600/20'
                       }`}
                       title={isLocked ? 'Đang khóa (Mất kết nối Database)' : 'Nhập điểm'}
                     >
@@ -315,10 +291,11 @@ export const MatchesView: React.FC<Props> = ({ category, searchQuery = '' }) => 
         </div>
       )}
 
+      {/* Score Modal */}
       {scoringMatch && (
         <ScoreModal
+          isOpen={!!scoringMatch}
           match={scoringMatch}
-          isOpen={true}
           onClose={() => setScoringMatch(null)}
           onSave={handleSaveScore}
         />

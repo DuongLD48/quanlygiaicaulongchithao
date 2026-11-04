@@ -120,20 +120,22 @@ export const GroupAndTeamManager: React.FC<Props> = ({ category }) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-5">
+    <div className="bg-[#0c1524] rounded-2xl p-4 sm:p-5 shadow-xl border border-[#16263f] space-y-5 text-slate-100">
       {/* Group Selector Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#16263f]">
         <div className="flex items-center gap-2">
-          <Shield className="w-5 h-5 text-indigo-600" />
-          <h3 className="font-bold text-slate-800 text-base">Quản Lý Bảng Đấu & Đội</h3>
+          <Shield className="w-4 h-4 text-cyan-400" />
+          <h3 className="font-black text-white text-xs sm:text-sm uppercase tracking-wide">
+            Quản Lý Bảng Đấu & Danh Sách Đội
+          </h3>
         </div>
 
         {isAdmin && !isAddingGroup && (
           <button
             onClick={() => setIsAddingGroup(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-semibold transition"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-cyan-950/60 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 rounded-lg text-xs font-bold transition cursor-pointer"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5" />
             Thêm Bảng Mới
           </button>
         )}
@@ -141,26 +143,26 @@ export const GroupAndTeamManager: React.FC<Props> = ({ category }) => {
 
       {/* Form tạo bảng */}
       {isAdmin && isAddingGroup && (
-        <form onSubmit={handleAddGroup} className="flex items-center gap-2 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+        <form onSubmit={handleAddGroup} className="flex items-center gap-2 p-3 bg-[#091120] border border-[#16263f] rounded-xl">
           <input
             type="text"
             placeholder="Tên bảng (VD: Bảng C, Bảng D...)"
             value={newGroupName}
             onChange={(e) => setNewGroupName(e.target.value)}
-            className="flex-1 px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+            className="flex-1 px-3 py-1.5 bg-[#070d19] border border-[#16263f] rounded-lg text-xs text-white focus:border-cyan-400 focus:outline-none"
             autoFocus
             required
           />
           <button
             type="submit"
-            className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700"
+            className="px-3.5 py-1.5 bg-cyan-600 text-black rounded-lg text-xs font-black hover:bg-cyan-500 cursor-pointer"
           >
             Tạo
           </button>
           <button
             type="button"
             onClick={() => setIsAddingGroup(false)}
-            className="px-2 py-1.5 text-xs text-slate-500 hover:text-slate-700"
+            className="px-2 py-1.5 text-xs text-slate-400 hover:text-white cursor-pointer"
           >
             Hủy
           </button>
@@ -175,23 +177,23 @@ export const GroupAndTeamManager: React.FC<Props> = ({ category }) => {
 
           if (isEditing) {
             return (
-              <div key={group.id} className="flex items-center gap-1 bg-white border-2 border-indigo-500 rounded-xl p-1">
+              <div key={group.id} className="flex items-center gap-1 bg-[#091120] border-2 border-cyan-400 rounded-xl p-1">
                 <input
                   type="text"
                   value={editGroupName}
                   onChange={(e) => setEditGroupName(e.target.value)}
-                  className="px-2 py-1 text-xs font-semibold focus:outline-none w-28"
+                  className="px-2 py-0.5 text-xs font-semibold bg-transparent text-white focus:outline-none w-24"
                   autoFocus
                 />
                 <button
                   onClick={() => handleUpdateGroupName(group)}
-                  className="p-1 text-emerald-600 hover:bg-emerald-50 rounded"
+                  className="p-1 text-emerald-400 hover:bg-emerald-950/60 rounded cursor-pointer"
                 >
                   <Check className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() => setEditingGroupId(null)}
-                  className="p-1 text-slate-400 hover:bg-slate-100 rounded"
+                  className="p-1 text-slate-400 hover:text-white rounded cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -202,46 +204,44 @@ export const GroupAndTeamManager: React.FC<Props> = ({ category }) => {
           return (
             <div
               key={group.id}
-              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition border ${
+              className={`group flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition border cursor-pointer ${
                 isSelected
-                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
-                  : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
+                  ? 'bg-cyan-500 text-black border-cyan-400 shadow-[0_0_12px_rgba(0,229,255,0.3)] font-black'
+                  : 'bg-[#091120] hover:bg-[#11233e] text-slate-300 border-[#192b45]'
               }`}
             >
               <button
                 type="button"
                 onClick={() => setActiveGroupId(group.id)}
-                className="flex items-center gap-1.5"
+                className="text-left cursor-pointer"
               >
-                <span>{group.name}</span>
-                <span
-                  className={`text-[10px] px-1.5 py-0.5 rounded-full ${
-                    isSelected ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-600'
-                  }`}
-                >
-                  {group.teams.length} đội
-                </span>
+                {group.name} ({group.teams.length} đội)
               </button>
 
               {isAdmin && (
-                <div className="flex items-center gap-0.5">
+                <div className={`flex items-center gap-0.5 ml-1 ${isSelected ? 'opacity-90' : 'opacity-60 group-hover:opacity-100'}`}>
                   <button
+                    type="button"
+                    title="Đổi tên bảng"
                     onClick={() => {
                       setEditingGroupId(group.id);
                       setEditGroupName(group.name);
                     }}
-                    className="p-1 rounded hover:bg-black/10"
-                    title="Đổi tên bảng"
+                    className={`p-1 rounded ${isSelected ? 'hover:bg-cyan-600/30' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
                   >
                     <Edit3 className="w-3 h-3" />
                   </button>
-                  <button
-                    onClick={() => handleDeleteGroup(group.id)}
-                    className="p-1 rounded hover:bg-rose-500/20 text-rose-300 hover:text-rose-100"
-                    title="Xóa bảng"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </button>
+
+                  {category.groups.length > 1 && (
+                    <button
+                      type="button"
+                      title="Xóa bảng đấu"
+                      onClick={() => handleDeleteGroup(group.id)}
+                      className={`p-1 rounded ${isSelected ? 'hover:bg-cyan-600/30 text-rose-900' : 'hover:bg-slate-800 text-slate-400 hover:text-rose-400'}`}
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  )}
                 </div>
               )}
             </div>

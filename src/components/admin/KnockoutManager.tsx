@@ -143,16 +143,16 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-5">
+    <div className="bg-[#0c1524] rounded-2xl p-4 sm:p-5 shadow-xl border border-[#16263f] space-y-5 text-slate-100">
       {/* Header bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#16263f]">
         <div>
-          <h3 className="font-bold text-slate-800 text-base flex items-center gap-2">
-            <GitBranch className="w-5 h-5 text-indigo-600" />
+          <h3 className="font-black text-white text-xs sm:text-sm uppercase tracking-wide flex items-center gap-2">
+            <GitBranch className="w-4 h-4 text-cyan-400" />
             Vòng Loại Trực Tiếp / Vòng Trong ({category.name})
           </h3>
-          <p className="text-xs text-slate-500">
-            Quản trị viên nhập thủ công các đội vào nhánh Bán kết, Chung kết, Tranh 3-4
+          <p className="text-[11px] text-slate-400">
+            Quản trị viên thiết lập các đội vào nhánh Bán kết, Chung kết, Tranh 3-4
           </p>
         </div>
 
@@ -161,18 +161,18 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
             <button
               type="button"
               onClick={() => setIsAddingCustomMatch(true)}
-              className="flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#091120] hover:bg-[#11233e] text-slate-200 border border-[#192b45] rounded-xl text-xs font-semibold transition cursor-pointer"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3.5 h-3.5 text-cyan-400" />
               Thêm Trận Đơn Lẻ
             </button>
 
             <button
               type="button"
               onClick={() => setIsSettingUp4Team(true)}
-              className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition"
+              className="flex items-center gap-1.5 px-4 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-black font-black rounded-xl text-xs shadow-lg shadow-cyan-600/20 transition cursor-pointer"
             >
-              <Trophy className="w-4 h-4 text-amber-300" />
+              <Trophy className="w-3.5 h-3.5" />
               Thiết Lập Nhánh Bán Kết & Chung Kết
             </button>
           </div>

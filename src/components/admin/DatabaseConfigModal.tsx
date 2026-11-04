@@ -5,7 +5,7 @@ import {
   type IFirebaseConfig,
 } from '../../services/firebase';
 import { useTournament } from '../../context/TournamentContext';
-import { Database, CheckCircle, AlertCircle, X, HelpCircle } from 'lucide-react';
+import { Database, CheckCircle, AlertCircle, X } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
@@ -13,7 +13,7 @@ interface Props {
 }
 
 export const DatabaseConfigModal: React.FC<Props> = ({ isOpen, onClose }) => {
-  const { isRealtimeConnected, reloadTournament } = useTournament();
+  const { isRealtimeConnected, connectionError, reloadTournament } = useTournament();
   const currentConfig = getStoredFirebaseConfig();
 
   const [databaseURL, setDatabaseURL] = useState(currentConfig?.databaseURL || '');
@@ -32,7 +32,6 @@ export const DatabaseConfigModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
   const handleParseJson = () => {
     try {
-      // Tìm object trong chuỗi (kể cả khi người dùng copy cả const firebaseConfig = { ... })
       const match = jsonInput.match(/\{[\s\S]*\}/);
       if (!match) {
         alert('Không tìm thấy JSON hợp lệ trong chuỗi bạn dán!');
@@ -80,35 +79,35 @@ export const DatabaseConfigModal: React.FC<Props> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
+      <div className="bg-[#0c1524] rounded-3xl shadow-2xl max-w-lg w-full border border-[#16263f] overflow-hidden flex flex-col max-h-[90vh] text-slate-100">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50">
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-              <Database className="w-5 h-5" />
+        <div className="flex items-center justify-between p-4 bg-[#091120] border-b border-[#16263f]">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 flex items-center justify-center">
+              <Database className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-800 text-base">Cấu Hình Firebase Realtime DB</h3>
-              <p className="text-xs text-slate-500">Đồng bộ tỉ số trực tiếp thời gian thực cho khán giả</p>
+              <h3 className="font-black text-white text-xs sm:text-sm uppercase tracking-wider">Cấu Hình Realtime Database</h3>
+              <p className="text-[10px] text-slate-400">Kết nối Firebase Realtime Database để đồng bộ dữ liệu</p>
             </div>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
-            <X className="w-5 h-5" />
+          <button onClick={onClose} className="w-7 h-7 rounded-lg bg-[#121f33] hover:bg-[#1a2b45] text-slate-400 hover:text-white flex items-center justify-center transition">
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Trạng thái hiện tại */}
-        <div className="p-4 bg-slate-100/50 border-b border-slate-200 flex items-center justify-between">
+        <div className="p-3 bg-[#070d19] border-b border-[#16263f] flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs">
-            <span className="font-semibold text-slate-600">Trạng thái:</span>
-            {isRealtimeConnected ? (
-              <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full font-bold border border-emerald-200">
-                <CheckCircle className="w-3.5 h-3.5" /> Đã kết nối Realtime
+            <span className="text-[11px] text-slate-400">Trạng thái:</span>
+            {isRealtimeConnected && !connectionError ? (
+              <span className="inline-flex items-center gap-1 text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded-full text-[10px] font-bold border border-emerald-500/40">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Đã kết nối Realtime
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1 text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full font-bold border border-amber-200">
-                <AlertCircle className="w-3.5 h-3.5" /> Chế độ Offline / LocalStorage
+              <span className="inline-flex items-center gap-1 text-rose-300 bg-rose-950/60 px-2 py-0.5 rounded-full text-[10px] font-bold border border-rose-500/40">
+                <AlertCircle className="w-3 h-3 text-rose-400" /> {connectionError ? 'Lỗi kết nối DB' : 'Chưa kết nối'}
               </span>
             )}
           </div>
@@ -116,17 +115,17 @@ export const DatabaseConfigModal: React.FC<Props> = ({ isOpen, onClose }) => {
           <button
             type="button"
             onClick={() => setShowJsonTab(!showJsonTab)}
-            className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold underline"
+            className="text-[11px] text-cyan-400 hover:text-cyan-300 font-bold underline"
           >
             {showJsonTab ? 'Nhập từng ô' : 'Dán nhanh mã JSON'}
           </button>
         </div>
 
-        {/* Nội dung form */}
-        <div className="p-5 overflow-y-auto space-y-4 flex-1">
+        {/* Form Content */}
+        <div className="p-5 overflow-y-auto space-y-3.5 flex-1 text-xs">
           {showJsonTab ? (
-            <div className="space-y-3">
-              <label className="text-xs font-bold text-slate-700 block">
+            <div className="space-y-2">
+              <label className="text-[11px] font-bold text-slate-300 block">
                 Dán cấu hình Firebase từ Firebase Console:
               </label>
               <textarea
@@ -134,95 +133,96 @@ export const DatabaseConfigModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 placeholder={`{\n  "apiKey": "your_api_key",\n  "databaseURL": "https://your-app-default-rtdb.firebaseio.com",\n  "projectId": "your-app"\n}`}
                 value={jsonInput}
                 onChange={(e) => setJsonInput(e.target.value)}
-                className="w-full p-3 font-mono text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="w-full p-3 font-mono text-[11px] bg-[#070d19] border border-[#16263f] rounded-xl text-white focus:border-cyan-400 focus:outline-none"
               />
               <button
                 type="button"
                 onClick={handleParseJson}
-                className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition"
+                className="w-full py-2 bg-[#121f33] hover:bg-[#1a2b45] text-cyan-300 border border-[#1d3252] rounded-xl font-bold text-xs transition"
               >
-                Trích Xuất & Điền Vào Form
+                Trích Xuất Thông Tin
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSave} className="space-y-3">
+            <form id="db-form" onSubmit={handleSave} className="space-y-3">
               <div>
-                <label className="text-[11px] font-bold text-slate-700 block mb-1">
-                  Database URL <span className="text-rose-500">*</span>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                  Database URL <span className="text-rose-400">*</span>
                 </label>
                 <input
                   type="url"
-                  placeholder="https://your-project-default-rtdb.firebaseio.com"
+                  placeholder="https://your-app-default-rtdb.asia-southeast1.firebasedatabase.app"
                   value={databaseURL}
                   onChange={(e) => setDatabaseURL(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-mono focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  className="w-full px-3 py-1.5 bg-[#070d19] border border-[#16263f] rounded-lg text-xs text-white focus:border-cyan-400 focus:outline-none"
                   required
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                  API Key
+                </label>
+                <input
+                  type="text"
+                  placeholder="AIzaSy..."
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  className="w-full px-3 py-1.5 bg-[#070d19] border border-[#16263f] rounded-lg text-xs text-white focus:border-cyan-400 focus:outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-[11px] font-bold text-slate-700 block mb-1">
-                    API Key
-                  </label>
-                  <input
-                    type="text"
-                    value={apiKey}
-                    onChange={(e) => setApiKey(e.target.value)}
-                    className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-mono focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
                     Project ID
                   </label>
                   <input
                     type="text"
                     value={projectId}
                     onChange={(e) => setProjectId(e.target.value)}
-                    className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-mono focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    className="w-full px-3 py-1.5 bg-[#070d19] border border-[#16263f] rounded-lg text-xs text-white focus:border-cyan-400 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                    Auth Domain
+                  </label>
+                  <input
+                    type="text"
+                    value={authDomain}
+                    onChange={(e) => setAuthDomain(e.target.value)}
+                    className="w-full px-3 py-1.5 bg-[#070d19] border border-[#16263f] rounded-lg text-xs text-white focus:border-cyan-400 focus:outline-none"
                   />
                 </div>
               </div>
-
-              <div className="p-3 bg-indigo-50/50 rounded-xl border border-indigo-100 flex items-start gap-2 text-xs text-indigo-900">
-                <HelpCircle className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
-                <div className="space-y-1">
-                  <p className="font-semibold">Lưu ý khi tạo Firebase Realtime Database:</p>
-                  <p className="text-[11px] text-slate-600">
-                    Vào Firebase Console &gt; Realtime Database &gt; Tab Rules &gt; đổi thành{' '}
-                    <code className="bg-white px-1 py-0.5 rounded border border-indigo-200">
-                      ".read": true, ".write": true
-                    </code>{' '}
-                    để ứng dụng có thể đọc và ghi tỉ số tức thì mà không cần máy chủ riêng.
-                  </p>
-                </div>
-              </div>
-
-              {savedMessage && (
-                <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800 text-xs font-semibold flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-emerald-600" />
-                  Đã lưu cấu hình Firebase! Đang kết nối...
-                </div>
-              )}
-
-              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-4 py-2 border border-slate-300 text-slate-700 rounded-xl text-xs font-medium hover:bg-slate-50"
-                >
-                  Đóng
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100"
-                >
-                  Lưu & Kết Nối Database
-                </button>
-              </div>
             </form>
           )}
+
+          {savedMessage && (
+            <div className="p-2.5 bg-emerald-950/60 border border-emerald-500/40 rounded-xl text-emerald-300 text-xs flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-emerald-400" />
+              <span>Đã lưu cấu hình và kết nối lại!</span>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between p-4 border-t border-[#16263f] bg-[#091120]">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-1.5 border border-[#16263f] text-slate-400 hover:text-white rounded-xl text-xs font-semibold"
+          >
+            Đóng
+          </button>
+          <button
+            type="button"
+            onClick={handleSave}
+            className="px-5 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-black font-black rounded-xl text-xs shadow-lg shadow-cyan-600/25 transition cursor-pointer"
+          >
+            Lưu & Kết Nối
+          </button>
         </div>
       </div>
     </div>

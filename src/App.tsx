@@ -5,7 +5,9 @@ import {
   StandingsView,
   MatchesView,
   KnockoutBracketView,
+  type MainTab,
 } from './components/public';
+import { RulesView } from './components/public/RulesView';
 import {
   CategoryManager,
   GroupAndTeamManager,
@@ -13,21 +15,12 @@ import {
   KnockoutManager,
 } from './components/admin';
 import {
-  Calendar,
-  Trophy,
-  GitBranch,
-  Users,
-  Shuffle,
-  Shield,
-  Layers,
-  Sparkles,
   AlertOctagon,
   RefreshCw,
   Database,
   Lock,
+  Sparkles,
 } from 'lucide-react';
-
-type MainTab = 'MATCHES' | 'STANDINGS' | 'BRACKET' | 'TEAMS_GROUPS' | 'FIXTURES_ADMIN' | 'KNOCKOUT_ADMIN';
 
 const TournamentDashboard: React.FC = () => {
   const {
@@ -41,138 +34,91 @@ const TournamentDashboard: React.FC = () => {
   } = useTournament();
 
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
-  const [activeTab, setActiveTab] = useState<MainTab>('MATCHES');
+  const [activeTab, setActiveTab] = useState<MainTab>('STANDINGS');
   const [searchQuery, setSearchQuery] = useState('');
   const [isInitializing, setIsInitializing] = useState(false);
 
-  // Đảm bảo chọn đúng category khi tournament có dữ liệu
+  // Chọn Category hợp lệ
   const activeCategory = tournament
     ? tournament.categories.find((c) => c.id === selectedCategoryId) ||
       tournament.categories[0]
     : null;
 
-  // 1. Màn hình Loading
+  // 1. Loading
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-screen flex items-center justify-center bg-[#070d19] text-white">
         <div className="flex flex-col items-center gap-3 p-8 text-center">
-          <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-sm font-semibold text-slate-700">Đang kết nối Firebase Realtime Database...</p>
-          <p className="text-xs text-slate-400">Đồng bộ trực tiếp từ máy chủ đám mây, không lưu cache bộ nhớ đệm</p>
+          <div className="w-10 h-10 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-xs font-bold text-slate-200 uppercase tracking-wider">Đang kết nối Realtime Database...</p>
+          <p className="text-[11px] text-slate-500">Đồng bộ trực tiếp dữ liệu giải đấu</p>
         </div>
       </div>
     );
   }
 
-  // 2. Màn hình Lỗi kết nối (Khi không tải được dữ liệu và có lỗi từ Firebase)
+  // 2. Lỗi kết nối
   if (!tournament && connectionError) {
     const isPermissionError =
       connectionError.toLowerCase().includes('permission') ||
       connectionError.toLowerCase().includes('phân quyền');
 
     return (
-      <div className="min-h-screen bg-slate-100 flex flex-col font-sans">
-        <Header searchQuery="" onSearchChange={() => {}} />
+      <div className="min-h-screen bg-[#070d19] text-white flex flex-col font-sans">
+        <Header
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          searchQuery=""
+          onSearchChange={() => {}}
+        />
         <main className="flex-1 flex items-center justify-center p-4">
-          <div className="max-w-xl w-full bg-white rounded-3xl shadow-xl border border-rose-200 overflow-hidden">
-            <div className="bg-rose-50 border-b border-rose-100 p-6 flex items-start gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-lg shadow-rose-200">
+          <div className="max-w-xl w-full bg-[#0c1524] rounded-3xl shadow-2xl border border-rose-500/40 overflow-hidden">
+            <div className="bg-rose-950/40 border-b border-rose-900/50 p-6 flex items-start gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-lg shadow-rose-900/50">
                 <AlertOctagon className="w-6 h-6" />
               </div>
               <div>
-                <h2 className="text-lg font-black text-rose-900">
+                <h2 className="text-base font-black text-rose-300 uppercase tracking-wide">
                   Không thể kết nối đến Firebase Database!
                 </h2>
-                <p className="text-xs text-rose-700 mt-1 font-medium">
-                  Hệ thống không sử dụng dữ liệu mẫu hay bộ nhớ đệm cục bộ. Mọi thao tác chỉnh sửa đã bị KHÓA.
+                <p className="text-xs text-rose-200/80 mt-1">
+                  Hệ thống không sử dụng bộ nhớ đệm giả lập. Mọi chức năng sửa dữ liệu đã bị KHÓA để bảo vệ an toàn.
                 </p>
               </div>
             </div>
 
             <div className="p-6 space-y-4">
-              <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 text-xs text-slate-700 space-y-1 font-mono break-all">
-                <span className="font-bold text-slate-500 block uppercase font-sans text-[11px]">Thông báo lỗi từ hệ thống:</span>
-                <span className="text-rose-600">{connectionError}</span>
+              <div className="bg-[#091120] rounded-2xl p-4 border border-[#16263f] text-xs space-y-1 font-mono break-all">
+                <span className="font-bold text-slate-500 block uppercase font-sans text-[11px]">Thông báo lỗi từ Firebase:</span>
+                <span className="text-rose-400">{connectionError}</span>
               </div>
 
               {isPermissionError && (
-                <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs text-amber-900 space-y-2">
-                  <div className="font-bold flex items-center gap-1.5 text-amber-800">
-                    <Database className="w-4 h-4" /> Hướng dẫn khắc phục lỗi Quyền truy cập (Rules):
+                <div className="bg-amber-950/30 border border-amber-500/30 rounded-2xl p-4 text-xs text-amber-200 space-y-2">
+                  <div className="font-bold flex items-center gap-1.5 text-amber-300">
+                    <Database className="w-4 h-4" /> Cần cấu hình Rules trong Firebase Console:
                   </div>
-                  <ol className="list-decimal list-inside space-y-1 text-amber-950 font-sans">
-                    <li>Vào <b>Firebase Console</b> &gt; chọn dự án của bạn.</li>
-                    <li>Vào mục <b>Realtime Database</b> &gt; chọn tab <b>Rules (Quy tắc)</b>.</li>
-                    <li>Sửa quy tắc thành:
-                      <pre className="mt-1 bg-amber-100/80 p-2 rounded-lg font-mono text-[11px] text-amber-900">
+                  <p className="text-[11px] text-amber-200/80">
+                    Vào <b>Firebase Console</b> &gt; <b>Realtime Database</b> &gt; tab <b>Rules</b>, sửa thành:
+                  </p>
+                  <pre className="bg-black/50 p-2.5 rounded-lg font-mono text-[11px] text-cyan-300">
 {`{
   "rules": {
     ".read": true,
     ".write": true
   }
 }`}
-                      </pre>
-                    </li>
-                    <li>Bấm nút <b>Publish (Xuất bản)</b> và nhấn nút "Thử lại kết nối" bên dưới.</li>
-                  </ol>
+                  </pre>
                 </div>
               )}
 
-              <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => reloadTournament()}
-                  className="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm rounded-xl transition shadow-md shadow-indigo-100 cursor-pointer"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                  Thử Lại Kết Nối
-                </button>
-              </div>
-            </div>
-          </div>
-        </main>
-      </div>
-    );
-  }
-
-  // 3. Màn hình Cơ sở dữ liệu trống (Chưa có giải đấu trên Firebase Database)
-  if (!tournament) {
-    return (
-      <div className="min-h-screen bg-slate-100 flex flex-col font-sans">
-        <Header searchQuery="" onSearchChange={() => {}} />
-        <main className="flex-1 flex items-center justify-center p-4">
-          <div className="max-w-lg w-full bg-white rounded-3xl shadow-xl border border-slate-200 p-8 text-center space-y-4">
-            <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
-              <Database className="w-7 h-7" />
-            </div>
-            <div>
-              <h2 className="text-xl font-black text-slate-800">Cơ Sở Dữ Liệu Đang Trống</h2>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                Đã kết nối thành công tới Firebase Database, nhưng chưa có dữ liệu giải đấu nào được khởi tạo.
-              </p>
-            </div>
-            <div className="pt-2">
               <button
                 type="button"
-                disabled={isInitializing}
-                onClick={async () => {
-                  try {
-                    setIsInitializing(true);
-                    await initializeNewTournament('Giải Cầu Lông CLB Chí Thảo 2026');
-                  } catch (e) {
-                    alert((e as Error).message);
-                  } finally {
-                    setIsInitializing(false);
-                  }
-                }}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm rounded-xl transition shadow-md shadow-indigo-100 disabled:opacity-50 cursor-pointer"
+                onClick={() => reloadTournament()}
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-cyan-600 hover:bg-cyan-500 text-black font-black text-xs rounded-xl transition shadow-lg shadow-cyan-600/20 cursor-pointer"
               >
-                {isInitializing ? (
-                  <RefreshCw className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Sparkles className="w-4 h-4 text-amber-300" />
-                )}
-                Khởi Tạo Giải Đấu Lên Database
+                <RefreshCw className="w-4 h-4" />
+                Thử Lại Kết Nối
               </button>
             </div>
           </div>
@@ -181,192 +127,114 @@ const TournamentDashboard: React.FC = () => {
     );
   }
 
-  // 4. Màn hình hoạt động bình thường khi đã tải dữ liệu từ Firebase
-  const totalTeams = activeCategory ? activeCategory.getAllTeams().length : 0;
-  const totalMatches = activeCategory ? activeCategory.getAllMatches().length : 0;
-  const finishedMatches = activeCategory
-    ? activeCategory.getAllMatches().filter((m) => m.status === 'FINISHED').length
-    : 0;
+  // 3. Database trống
+  if (!tournament) {
+    return (
+      <div className="min-h-screen bg-[#070d19] text-white flex flex-col font-sans">
+        <Header
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          searchQuery=""
+          onSearchChange={() => {}}
+        />
+        <main className="flex-1 flex items-center justify-center p-4">
+          <div className="max-w-lg w-full bg-[#0c1524] rounded-3xl shadow-2xl border border-[#16263f] p-8 text-center space-y-4">
+            <div className="w-14 h-14 rounded-2xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 flex items-center justify-center mx-auto">
+              <Database className="w-7 h-7" />
+            </div>
+            <div>
+              <h2 className="text-base font-black text-white uppercase tracking-wider">Cơ Sở Dữ Liệu Đang Trống</h2>
+              <p className="text-xs text-slate-400 mt-1">
+                Đã kết nối thành công tới Firebase Database nhưng chưa có giải đấu nào.
+              </p>
+            </div>
+            <button
+              type="button"
+              disabled={isInitializing}
+              onClick={async () => {
+                try {
+                  setIsInitializing(true);
+                  await initializeNewTournament('Giải Cầu Lông CLB Chí Thảo 2026');
+                } catch (e) {
+                  alert((e as Error).message);
+                } finally {
+                  setIsInitializing(false);
+                }
+              }}
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-cyan-600 hover:bg-cyan-500 text-black font-black text-xs rounded-xl transition shadow-lg shadow-cyan-600/20 cursor-pointer disabled:opacity-50"
+            >
+              {isInitializing ? (
+                <RefreshCw className="w-4 h-4 animate-spin" />
+              ) : (
+                <Sparkles className="w-4 h-4" />
+              )}
+              Khởi Tạo Giải Đấu Lên Database
+            </button>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   const isEditingLocked = !isRealtimeConnected || !!connectionError;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#070d19] text-slate-100 flex flex-col font-sans antialiased selection:bg-cyan-500 selection:text-black">
       {/* Header */}
-      <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+      <Header
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+      />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        {/* Banner Cảnh báo nếu mất kết nối trong lúc đang chạy */}
+      <main className="flex-grow max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-5 space-y-5">
+        {/* Banner Khóa Chỉnh Sửa nếu mất mạng trong lúc dùng */}
         {isEditingLocked && (
-          <div className="bg-rose-500 text-white rounded-2xl p-4 shadow-lg flex items-center justify-between gap-3 animate-fade-in">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
-                <Lock className="w-4 h-4 text-white" />
-              </div>
-              <div>
-                <p className="text-xs sm:text-sm font-extrabold">
-                  CHẾ ĐỘ KHÓA CHỈNH SỬA: Mất kết nối tới Database Firebase!
-                </p>
-                <p className="text-[11px] text-rose-100 mt-0.5">
-                  {connectionError || 'Vui lòng kiểm tra đường truyền mạng hoặc cấu hình Database để tiếp tục sửa dữ liệu.'}
-                </p>
-              </div>
+          <div className="bg-rose-950/80 border border-rose-500/60 text-rose-200 rounded-xl p-3.5 shadow-lg flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <Lock className="w-4 h-4 text-rose-400 shrink-0" />
+              <p className="text-xs font-bold">
+                CHẾ ĐỘ CHỈ ĐỌC: Đang mất kết nối với Database! Toàn bộ thao tác sửa đã bị khóa để bảo toàn dữ liệu.
+              </p>
             </div>
             <button
               onClick={() => reloadTournament()}
-              className="px-3 py-1.5 bg-white text-rose-700 font-bold rounded-xl text-xs hover:bg-rose-50 transition shrink-0 flex items-center gap-1 cursor-pointer"
+              className="px-3 py-1 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg text-xs transition shrink-0 cursor-pointer"
             >
-              <RefreshCw className="w-3.5 h-3.5" />
               Thử lại
             </button>
           </div>
         )}
 
-        {/* Banner Chào Mừng / Thống Kê Nhanh */}
-        <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 rounded-3xl p-5 sm:p-6 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs uppercase font-extrabold tracking-wider bg-indigo-500/30 text-indigo-300 px-2.5 py-0.5 rounded-full border border-indigo-400/20 flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-amber-300" /> Hệ Thống Quản Lý Giải
-              </span>
-              {isAdmin && (
-                <span className="text-xs font-bold text-emerald-300 bg-emerald-950/60 border border-emerald-500/40 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                  <Shield className="w-3 h-3 text-emerald-400" /> Chế Độ Quản Trị Viên
-                </span>
-              )}
-            </div>
-            <h2 className="text-xl sm:text-2xl font-black mt-2 text-white tracking-tight">
-              {tournament.name}
-            </h2>
-            <p className="text-xs sm:text-sm text-indigo-200 mt-1">
-              {tournament.location} • {tournament.courts.length} Sân thi đấu • Nguồn dữ liệu: Firebase Realtime Database
-            </p>
-          </div>
-
-          {/* Stat Badges */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-            <div className="px-3.5 py-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 text-center">
-              <span className="text-[10px] text-indigo-200 block font-medium">Tổng Đội</span>
-              <span className="text-base sm:text-lg font-black text-white">{totalTeams}</span>
-            </div>
-            <div className="px-3.5 py-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 text-center">
-              <span className="text-[10px] text-indigo-200 block font-medium">Tổng Trận</span>
-              <span className="text-base sm:text-lg font-black text-white">{totalMatches}</span>
-            </div>
-            <div className="px-3.5 py-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 text-center">
-              <span className="text-[10px] text-indigo-200 block font-medium">Đã Đấu</span>
-              <span className="text-base sm:text-lg font-black text-emerald-300">{finishedMatches}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Thanh chọn Nội Dung Thi Đấu */}
+        {/* Category Pills Selector */}
         <CategoryManager
           selectedCategoryId={activeCategory?.id || ''}
           onSelectCategory={setSelectedCategoryId}
         />
 
-        {/* Tab Navigation */}
-        <div className="flex overflow-x-auto gap-2 border-b border-slate-200 pb-2">
-          {/* Tab 1: Lịch thi đấu & Kết quả */}
-          <button
-            onClick={() => setActiveTab('MATCHES')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition border ${
-              activeTab === 'MATCHES'
-                ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-100'
-                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
-            }`}
-          >
-            <Calendar className="w-4 h-4" />
-            Lịch & Tỉ Số
-          </button>
-
-          {/* Tab 2: Bảng xếp hạng */}
-          <button
-            onClick={() => setActiveTab('STANDINGS')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition border ${
-              activeTab === 'STANDINGS'
-                ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-100'
-                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
-            }`}
-          >
-            <Trophy className="w-4 h-4 text-amber-500" />
-            Bảng Xếp Hạng Vòng Bảng
-          </button>
-
-          {/* Tab 3: Cây nhánh đấu trực quan */}
-          <button
-            onClick={() => setActiveTab('BRACKET')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition border ${
-              activeTab === 'BRACKET'
-                ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-100'
-                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
-            }`}
-          >
-            <GitBranch className="w-4 h-4 text-indigo-400" />
-            Sơ Đồ Nhánh Knockout
-          </button>
-
-          {/* Tab 4 (Admin): Xếp trận & Tinh chỉnh */}
-          {isAdmin && (
-            <button
-              onClick={() => setActiveTab('FIXTURES_ADMIN')}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition border ${
-                activeTab === 'FIXTURES_ADMIN'
-                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-100'
-                  : 'bg-indigo-50/70 hover:bg-indigo-100 text-indigo-800 border-indigo-200'
-              }`}
-            >
-              <Shuffle className="w-4 h-4" />
-              Bốc Thăm & Sắp Lịch
-            </button>
-          )}
-
-          {/* Tab 5 (Admin): Quản lý Đội & Bảng */}
-          {isAdmin && (
-            <button
-              onClick={() => setActiveTab('TEAMS_GROUPS')}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition border ${
-                activeTab === 'TEAMS_GROUPS'
-                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-100'
-                  : 'bg-indigo-50/70 hover:bg-indigo-100 text-indigo-800 border-indigo-200'
-              }`}
-            >
-              <Users className="w-4 h-4" />
-              Quản Lý Đội & Bảng
-            </button>
-          )}
-
-          {/* Tab 6 (Admin): Thiết lập Vòng trong */}
-          {isAdmin && (
-            <button
-              onClick={() => setActiveTab('KNOCKOUT_ADMIN')}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition border ${
-                activeTab === 'KNOCKOUT_ADMIN'
-                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-100'
-                  : 'bg-indigo-50/70 hover:bg-indigo-100 text-indigo-800 border-indigo-200'
-              }`}
-            >
-              <Layers className="w-4 h-4" />
-              Cài Đặt Vòng Trong
-            </button>
-          )}
-        </div>
-
         {/* Dynamic Tab Body */}
         {activeCategory ? (
           <div>
-            {activeTab === 'MATCHES' && (
-              <MatchesView category={activeCategory} searchQuery={searchQuery} />
+            {/* TAB: THỂ LỆ */}
+            {activeTab === 'RULES' && (
+              <RulesView onGoToStandings={() => setActiveTab('STANDINGS')} />
             )}
 
+            {/* TAB: BẢNG ĐIỂM (Bảng điểm + Lịch đấu theo từng Bảng) */}
             {activeTab === 'STANDINGS' && (
               <StandingsView category={activeCategory} searchQuery={searchQuery} />
             )}
 
+            {/* TAB: VÒNG LOẠI (Knockout Bracket & Podium) */}
             {activeTab === 'BRACKET' && (
               <KnockoutBracketView category={activeCategory} />
+            )}
+
+            {/* ADMIN TABS */}
+            {isAdmin && activeTab === 'MATCHES_ADMIN' && (
+              <MatchesView category={activeCategory} searchQuery={searchQuery} />
             )}
 
             {isAdmin && activeTab === 'FIXTURES_ADMIN' && (
@@ -382,20 +250,18 @@ const TournamentDashboard: React.FC = () => {
             )}
           </div>
         ) : (
-          <div className="p-12 text-center text-slate-400 text-sm bg-white rounded-2xl border border-dashed border-slate-200">
-            Không tìm thấy nội dung thi đấu nào.
+          <div className="p-12 text-center text-slate-500 text-xs bg-[#0c1524] rounded-2xl border border-[#16263f]">
+            Không tìm thấy nội dung thi đấu nào. Vui lòng bấm "Thêm Nội Dung" ở trên!
           </div>
         )}
       </main>
 
       {/* Footer */}
-      <footer className="mt-auto bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 space-y-1">
-          <p className="font-semibold text-slate-700">
-            {tournament.name} • Quản Lý Giải Cầu Lông Thời Gian Thực
-          </p>
-          <p className="text-slate-400">
-            Đồng bộ hóa 100% qua Firebase Realtime Database
+      <footer className="bg-[#08101c] border-t border-[#14233a] py-4 mt-auto text-center text-xs text-slate-500">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <p>© 2026 {tournament.name} • CLB Cầu Lông Chí Thảo</p>
+          <p className="text-slate-400 text-[11px]">
+            Hệ thống quản lý giải đấu thời gian thực • Đồng bộ Firebase Realtime
           </p>
         </div>
       </footer>

@@ -172,15 +172,15 @@ export const FixtureManager: React.FC<Props> = ({ category }) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-5">
+    <div className="bg-[#0c1524] rounded-2xl p-4 sm:p-5 shadow-xl border border-[#16263f] space-y-5 text-slate-100">
       {/* Header bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#16263f]">
         <div>
-          <h3 className="font-bold text-slate-800 text-base flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-indigo-600" />
+          <h3 className="font-black text-white text-xs sm:text-sm uppercase tracking-wide flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-cyan-400" />
             Lịch Thi Đấu Vòng Bảng ({category.name})
           </h3>
-          <p className="text-xs text-slate-500">
+          <p className="text-[11px] text-slate-400">
             Xem lịch thi đấu, bốc thăm random tự động hoặc chỉnh sửa các cặp đấu
           </p>
         </div>
@@ -191,19 +191,19 @@ export const FixtureManager: React.FC<Props> = ({ category }) => {
             <button
               type="button"
               onClick={() => setIsAddingMatch(true)}
-              className="flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#091120] hover:bg-[#11233e] text-slate-200 border border-[#192b45] rounded-xl text-xs font-semibold transition"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3.5 h-3.5 text-cyan-400" />
               Thêm Trận Thủ Công
             </button>
 
             <button
               type="button"
               onClick={handleAutoGenerateRandomFixtures}
-              className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition"
+              className="flex items-center gap-1.5 px-4 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-black font-black rounded-xl text-xs shadow-lg shadow-cyan-600/20 transition cursor-pointer"
               title="Tự động bốc thăm xếp cặp đấu ngẫu nhiên cho bảng hiện tại"
             >
-              <Shuffle className="w-4 h-4" />
+              <Shuffle className="w-3.5 h-3.5" />
               Xếp Trận Random Tự Động
             </button>
           </div>
@@ -218,10 +218,10 @@ export const FixtureManager: React.FC<Props> = ({ category }) => {
             <button
               key={group.id}
               onClick={() => setActiveGroupId(group.id)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition border ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition border cursor-pointer ${
                 isSelected
-                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
-                  : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
+                  ? 'bg-cyan-500 text-black border-cyan-400 shadow-[0_0_12px_rgba(0,229,255,0.3)] font-black'
+                  : 'bg-[#091120] hover:bg-[#11233e] text-slate-300 border-[#192b45]'
               }`}
             >
               {group.name} ({group.matches.length} trận)
