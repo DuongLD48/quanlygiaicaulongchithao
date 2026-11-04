@@ -133,24 +133,25 @@ export class Match {
   }
 
   public toJSON(): IMatchJSON {
-    return {
+    const json: IMatchJSON = {
       id: this.id,
       matchCode: this.matchCode,
       categoryId: this.categoryId,
       stageType: this.stageType,
       roundName: this.roundName,
-      court: this.court,
-      scheduledTime: this.scheduledTime,
+      court: this.court || '',
+      scheduledTime: this.scheduledTime || '',
       teamA: this.teamA ? this.teamA.toJSON() : null,
       teamB: this.teamB ? this.teamB.toJSON() : null,
       rule: this.rule.toJSON(),
-      scores: this.scores,
+      scores: this.scores || [],
       status: this.status,
-      winnerId: this.winnerId,
-      groupId: this.groupId,
-      groupName: this.groupName,
-      nextMatchId: this.nextMatchId,
+      winnerId: this.winnerId ?? null,
     };
+    if (this.groupId !== undefined && this.groupId !== null) json.groupId = this.groupId;
+    if (this.groupName !== undefined && this.groupName !== null) json.groupName = this.groupName;
+    if (this.nextMatchId !== undefined && this.nextMatchId !== null) json.nextMatchId = this.nextMatchId;
+    return json;
   }
 
   public static fromJSON(json: IMatchJSON): Match {

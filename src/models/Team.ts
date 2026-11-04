@@ -40,12 +40,15 @@ export class Team {
   }
 
   public toJSON(): ITeamJSON {
-    return {
+    const json: ITeamJSON = {
       id: this.id,
       name: this.name,
       players: this.players.map((p) => p.toJSON()),
-      seed: this.seed,
     };
+    if (this.seed !== undefined && this.seed !== null) {
+      json.seed = this.seed;
+    }
+    return json;
   }
 
   public static fromJSON(json: ITeamJSON): Team {

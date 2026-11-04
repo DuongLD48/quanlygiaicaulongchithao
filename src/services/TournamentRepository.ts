@@ -67,9 +67,12 @@ export class TournamentRepository implements ITournamentRepository {
       throw new Error('Mất kết nối với Firebase Database! Không thể lưu dữ liệu.');
     }
 
-    const json = tournament.toJSON();
+    // Loại bỏ triệt để các thuộc tính undefined để Firebase không báo lỗi 'value argument contains undefined'
+    const rawJson = tournament.toJSON();
+    const cleanJson = JSON.parse(JSON.stringify(rawJson));
+
     const tournamentRef = ref(db, `tournaments/${tournament.id}`);
-    await set(tournamentRef, json);
+    await set(tournamentRef, cleanJson);
   }
 
   public subscribe(
