@@ -36,15 +36,49 @@ export const Header: React.FC<Props> = ({
   searchQuery,
   onSearchChange,
 }) => {
-  const { isAdmin } = useTournament();
+  const { tournament, isAdmin } = useTournament();
 
   return (
     <header className="bg-[#091120]/95 backdrop-blur-md border-b border-[#14233a] sticky top-0 z-40 shadow-xl">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
-          {/* Left: Primary Navigation Tabs */}
-          <nav className="flex items-center space-x-1 sm:space-x-1.5 overflow-x-auto py-0.5 scrollbar-none">
-            {/* Tab: Thể lệ */}
+          {/* Left: Primary Navigation Tabs with Badminton Racket Brand Icon */}
+          <div className="flex items-center gap-2 overflow-x-auto py-0.5 scrollbar-none">
+            {/* Icon Vợt Cầu Lông Tiêu Đề */}
+            <div
+              title={tournament?.contentConfig?.tournamentName || tournament?.name || 'Giải Cầu Lông'}
+              className="flex items-center gap-1.5 shrink-0 pr-1.5 border-r border-[#192b45]"
+            >
+              <div className="w-7 h-7 rounded-lg bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 flex items-center justify-center shadow-md shadow-cyan-950/50">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className="w-4 h-4 text-cyan-400"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <ellipse cx="14" cy="7" rx="5" ry="6" stroke="currentColor" fill="#081c33" fillOpacity="0.6" />
+                  <line x1="12" y1="2" x2="12" y2="12" stroke="currentColor" strokeWidth="0.8" strokeOpacity="0.7" />
+                  <line x1="16" y1="2" x2="16" y2="12" stroke="currentColor" strokeWidth="0.8" strokeOpacity="0.7" />
+                  <line x1="9.5" y1="5" x2="18.5" y2="5" stroke="currentColor" strokeWidth="0.8" strokeOpacity="0.7" />
+                  <line x1="9.5" y1="9" x2="18.5" y2="9" stroke="currentColor" strokeWidth="0.8" strokeOpacity="0.7" />
+                  <line x1="10.5" y1="11.5" x2="5" y2="17" stroke="currentColor" strokeWidth="2" />
+                  <line x1="5" y1="17" x2="2.5" y2="19.5" stroke="#f8fafc" strokeWidth="2.8" strokeLinecap="square" />
+                  <path d="M18 16.5 L21.5 14.5 L22 17.5 Z" fill="#fbbf24" stroke="#fbbf24" strokeWidth="0.8" />
+                  <circle cx="17.5" cy="17" r="1.2" fill="#ffffff" />
+                </svg>
+              </div>
+              <span className="hidden xl:inline font-black text-[11px] text-white uppercase tracking-wider truncate max-w-[120px]">
+                {tournament?.contentConfig?.tournamentName
+                  ? tournament.contentConfig.tournamentName.replace('Giải Cầu Lông ', '')
+                  : tournament?.name || 'Cầu Lông'}
+              </span>
+            </div>
+
+            <nav className="flex items-center space-x-1 sm:space-x-1.5 shrink-0">
+              {/* Tab: Thể lệ */}
             <button
               type="button"
               onClick={() => onTabChange('RULES')}
@@ -158,6 +192,7 @@ export const Header: React.FC<Props> = ({
               </>
             )}
           </nav>
+        </div>
 
           {/* Right: Search Bar */}
           <div className="relative min-w-[200px] sm:w-64">
