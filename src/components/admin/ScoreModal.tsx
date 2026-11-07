@@ -99,9 +99,16 @@ export const ScoreModal: React.FC<Props> = ({ match, isOpen, onClose, onSave }) 
   };
 
   const handleSave = () => {
+    let resolvedWinnerId = winnerId;
+    if (status === 'FINISHED' && !resolvedWinnerId) {
+      const totalA = scores.reduce((sum, s) => sum + s.teamA, 0);
+      const totalB = scores.reduce((sum, s) => sum + s.teamB, 0);
+      if (totalA > totalB) resolvedWinnerId = workingMatch.teamA?.id || null;
+      else if (totalB > totalA) resolvedWinnerId = workingMatch.teamB?.id || null;
+    }
     workingMatch.scores = scores;
     workingMatch.status = status;
-    workingMatch.winnerId = winnerId;
+    workingMatch.winnerId = resolvedWinnerId;
     onSave(workingMatch);
     onClose();
   };

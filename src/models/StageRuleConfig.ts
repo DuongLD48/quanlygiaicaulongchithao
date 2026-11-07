@@ -47,7 +47,7 @@ export class StageRuleConfig {
     if (normalized.includes('GROUP') || normalized.includes('BẢNG')) {
       return this.groupStage;
     }
-    if (normalized.includes('16') || normalized.includes('VÒNG LOẠI')) {
+    if (normalized.includes('16') || normalized.includes('VÒNG LOẠI') || normalized.includes('1/8')) {
       return this.roundOf16;
     }
     if (normalized.includes('QUARTER') || normalized.includes('TỨ KẾT')) {

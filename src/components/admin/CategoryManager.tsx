@@ -81,6 +81,7 @@ export const CategoryManager: React.FC<Props> = ({
       alert('Không thể lưu luật thi đấu: Mất kết nối tới Database!');
       return;
     }
+    updatedCat.syncMatchesWithRules();
     const idx = tournament.categories.findIndex((c) => c.id === updatedCat.id);
     if (idx !== -1) {
       tournament.categories[idx] = updatedCat;

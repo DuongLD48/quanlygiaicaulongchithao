@@ -253,17 +253,17 @@ export const GroupAndTeamManager: React.FC<Props> = ({ category }) => {
       {activeGroup ? (
         <div className="space-y-4 pt-2">
           <div className="flex items-center justify-between">
-            <div className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
-              <Users className="w-4 h-4 text-slate-400" />
+            <div className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+              <Users className="w-4 h-4 text-cyan-400" />
               Danh Sách Đội ({activeGroup.name})
             </div>
 
             {isAdmin && !isAddingTeam && (
               <button
                 onClick={() => setIsAddingTeam(true)}
-                className="flex items-center gap-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-black font-bold rounded-xl text-xs shadow transition cursor-pointer"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-3.5 h-3.5" />
                 Thêm Đội Vào {activeGroup.name}
               </button>
             )}
@@ -271,13 +271,13 @@ export const GroupAndTeamManager: React.FC<Props> = ({ category }) => {
 
           {/* Form thêm đội */}
           {isAdmin && isAddingTeam && (
-            <form onSubmit={handleAddTeam} className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+            <form onSubmit={handleAddTeam} className="p-4 bg-[#070d19]/90 border border-[#1d3252] rounded-2xl space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-700">Thêm Đội Mới Vào {activeGroup.name}</span>
+                <span className="text-xs font-bold text-cyan-300">Thêm Đội Mới Vào {activeGroup.name}</span>
                 <button
                   type="button"
                   onClick={() => setIsAddingTeam(false)}
-                  className="text-slate-400 hover:text-slate-600"
+                  className="text-slate-400 hover:text-white cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -285,21 +285,21 @@ export const GroupAndTeamManager: React.FC<Props> = ({ category }) => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[11px] font-semibold text-slate-600 block mb-1">
-                    Vận động viên 1 <span className="text-rose-500">*</span>
+                  <label className="text-[11px] font-semibold text-slate-300 block mb-1">
+                    Vận động viên 1 <span className="text-rose-400">*</span>
                   </label>
                   <input
                     type="text"
                     placeholder="Họ và tên VĐV 1"
                     value={player1Name}
                     onChange={(e) => setPlayer1Name(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    className="w-full px-3 py-2 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-semibold text-slate-600 block mb-1">
+                  <label className="text-[11px] font-semibold text-slate-300 block mb-1">
                     Vận động viên 2 (Nếu đánh đôi)
                   </label>
                   <input
@@ -307,12 +307,12 @@ export const GroupAndTeamManager: React.FC<Props> = ({ category }) => {
                     placeholder="Họ và tên VĐV 2"
                     value={player2Name}
                     onChange={(e) => setPlayer2Name(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    className="w-full px-3 py-2 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-semibold text-slate-600 block mb-1">
+                  <label className="text-[11px] font-semibold text-slate-300 block mb-1">
                     Tên Đội / Cặp Đôi (Tùy chọn)
                   </label>
                   <input
@@ -320,12 +320,12 @@ export const GroupAndTeamManager: React.FC<Props> = ({ category }) => {
                     placeholder="Để trống sẽ tự động lấy tên 2 VĐV"
                     value={teamName}
                     onChange={(e) => setTeamName(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    className="w-full px-3 py-2 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-semibold text-slate-600 block mb-1">
+                  <label className="text-[11px] font-semibold text-slate-300 block mb-1">
                     Câu Lạc Bộ / Đơn Vị
                   </label>
                   <input
@@ -333,7 +333,7 @@ export const GroupAndTeamManager: React.FC<Props> = ({ category }) => {
                     placeholder="CLB Cầu Lông..."
                     value={clubName}
                     onChange={(e) => setClubName(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    className="w-full px-3 py-2 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
                   />
                 </div>
               </div>
@@ -342,13 +342,13 @@ export const GroupAndTeamManager: React.FC<Props> = ({ category }) => {
                 <button
                   type="button"
                   onClick={() => setIsAddingTeam(false)}
-                  className="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-200 rounded-lg"
+                  className="px-3 py-1.5 text-xs text-slate-400 hover:text-white hover:bg-[#121f33] rounded-xl transition cursor-pointer"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold"
+                  className="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-black rounded-xl text-xs font-bold transition shadow cursor-pointer"
                 >
                   Lưu Đội
                 </button>
@@ -358,7 +358,7 @@ export const GroupAndTeamManager: React.FC<Props> = ({ category }) => {
 
           {/* Danh sách thẻ đội */}
           {activeGroup.teams.length === 0 ? (
-            <div className="text-center py-8 text-slate-400 text-xs bg-slate-50 rounded-xl border border-dashed border-slate-200">
+            <div className="text-center py-8 text-slate-400 text-xs bg-[#070d19]/60 rounded-xl border border-dashed border-[#1d3252]">
               Chưa có đội nào trong {activeGroup.name}. Hãy bấm nút "Thêm Đội" ở trên để nhập các thành viên!
             </div>
           ) : (
@@ -366,29 +366,29 @@ export const GroupAndTeamManager: React.FC<Props> = ({ category }) => {
               {activeGroup.teams.map((team, idx) => (
                 <div
                   key={team.id}
-                  className="p-3.5 bg-slate-50/80 hover:bg-slate-50 border border-slate-200 rounded-xl transition flex flex-col justify-between"
+                  className="p-3.5 bg-[#091120] hover:bg-[#0c1729] border border-[#16263f] hover:border-cyan-500/40 rounded-xl transition flex flex-col justify-between shadow-sm"
                 >
                   <div>
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 text-[11px] font-bold flex items-center justify-center shrink-0">
+                        <span className="w-5 h-5 rounded-full bg-[#101e33] border border-[#1d3252] text-cyan-300 text-[11px] font-mono font-bold flex items-center justify-center shrink-0">
                           {idx + 1}
                         </span>
-                        <h4 className="font-bold text-slate-800 text-sm">{team.name}</h4>
+                        <h4 className="font-bold text-white text-sm truncate">{team.name}</h4>
                       </div>
 
                       {isAdmin && (
                         <div className="flex items-center gap-1 shrink-0">
                           <button
                             onClick={() => setEditingTeam(team)}
-                            className="p-1 text-slate-400 hover:text-indigo-600 rounded hover:bg-slate-200/50"
+                            className="p-1 text-slate-400 hover:text-cyan-300 hover:bg-[#101e33] rounded transition cursor-pointer"
                             title="Sửa đội"
                           >
                             <Edit3 className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => handleDeleteTeam(team.id)}
-                            className="p-1 text-slate-400 hover:text-rose-600 rounded hover:bg-rose-50"
+                            className="p-1 text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 rounded transition cursor-pointer"
                             title="Xóa đội"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -397,13 +397,13 @@ export const GroupAndTeamManager: React.FC<Props> = ({ category }) => {
                       )}
                     </div>
 
-                    <div className="mt-2 space-y-1 text-xs text-slate-600">
+                    <div className="mt-2.5 space-y-1.5 text-xs text-slate-300">
                       {team.players.map((p, pIdx) => (
                         <div key={p.id || pIdx} className="flex items-center gap-1.5">
-                          <User className="w-3 h-3 text-slate-400" />
-                          <span>{p.fullName}</span>
+                          <User className="w-3.5 h-3.5 text-cyan-400/70 shrink-0" />
+                          <span className="font-medium text-slate-200">{p.fullName}</span>
                           {p.club && (
-                            <span className="text-[10px] px-1.5 py-0.2 bg-slate-200 text-slate-600 rounded">
+                            <span className="text-[10px] px-1.5 py-0.5 bg-[#101e33] text-cyan-300 border border-[#1d3252] rounded">
                               {p.club}
                             </span>
                           )}
@@ -424,24 +424,24 @@ export const GroupAndTeamManager: React.FC<Props> = ({ category }) => {
 
       {/* Modal chỉnh sửa đội */}
       {editingTeam && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
           <form
             onSubmit={handleSaveEditTeam}
-            className="bg-white rounded-2xl p-5 max-w-md w-full border border-slate-200 shadow-xl space-y-4"
+            className="bg-[#0c1524] rounded-3xl p-5 max-w-md w-full border border-[#16263f] shadow-2xl space-y-4 text-slate-100"
           >
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-              <h4 className="font-bold text-sm text-slate-800">Chỉnh Sửa Thông Tin Đội</h4>
+            <div className="flex items-center justify-between pb-2 border-b border-[#16263f]">
+              <h4 className="font-bold text-sm text-white">Chỉnh Sửa Thông Tin Đội</h4>
               <button
                 type="button"
                 onClick={() => setEditingTeam(null)}
-                className="text-slate-400 hover:text-slate-600"
+                className="text-slate-400 hover:text-white cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-600 block mb-1">Tên Đội</label>
+              <label className="text-xs font-semibold text-slate-300 block mb-1">Tên Đội</label>
               <input
                 type="text"
                 value={editingTeam.name}
@@ -449,14 +449,14 @@ export const GroupAndTeamManager: React.FC<Props> = ({ category }) => {
                   editingTeam.name = e.target.value;
                   setEditingTeam(Team.fromJSON(editingTeam.toJSON()));
                 }}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="w-full px-3 py-2 bg-[#070d19] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
                 required
               />
             </div>
 
             {editingTeam.players.map((player, pIdx) => (
-              <div key={player.id} className="p-3 bg-slate-50 rounded-xl space-y-2 border border-slate-200">
-                <span className="text-[11px] font-bold text-slate-700">Vận động viên {pIdx + 1}</span>
+              <div key={player.id} className="p-3 bg-[#070d19] rounded-xl space-y-2 border border-[#16263f]">
+                <span className="text-[11px] font-bold text-cyan-300">Vận động viên {pIdx + 1}</span>
                 <input
                   type="text"
                   placeholder="Họ tên"
@@ -465,7 +465,7 @@ export const GroupAndTeamManager: React.FC<Props> = ({ category }) => {
                     player.fullName = e.target.value;
                     setEditingTeam(Team.fromJSON(editingTeam.toJSON()));
                   }}
-                  className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  className="w-full px-3 py-1.5 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
                   required
                 />
                 <input
@@ -476,22 +476,22 @@ export const GroupAndTeamManager: React.FC<Props> = ({ category }) => {
                     player.club = e.target.value;
                     setEditingTeam(Team.fromJSON(editingTeam.toJSON()));
                   }}
-                  className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  className="w-full px-3 py-1.5 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
                 />
               </div>
             ))}
 
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="flex justify-end gap-2 pt-2 border-t border-[#16263f]">
               <button
                 type="button"
                 onClick={() => setEditingTeam(null)}
-                className="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg"
+                className="px-3 py-1.5 text-xs text-slate-400 hover:text-white hover:bg-[#121f33] rounded-xl transition cursor-pointer"
               >
                 Hủy
               </button>
               <button
                 type="submit"
-                className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold"
+                className="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-black rounded-xl text-xs font-bold transition shadow cursor-pointer"
               >
                 Cập Nhật
               </button>

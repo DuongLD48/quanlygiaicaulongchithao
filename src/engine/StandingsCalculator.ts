@@ -42,10 +42,27 @@ export class StandingsCalculator {
       rowB.setsWon += setsWonB;
       rowB.setsLost += setsWonA;
 
-      if (match.winnerId === match.teamA.id) {
+      let matchWinnerId = match.winnerId;
+      if (!matchWinnerId) {
+        if (setsWonA > setsWonB) {
+          matchWinnerId = match.teamA.id;
+        } else if (setsWonB > setsWonA) {
+          matchWinnerId = match.teamB.id;
+        } else {
+          const totalPointsA = match.scores.reduce((sum, s) => sum + s.teamA, 0);
+          const totalPointsB = match.scores.reduce((sum, s) => sum + s.teamB, 0);
+          if (totalPointsA > totalPointsB) {
+            matchWinnerId = match.teamA.id;
+          } else if (totalPointsB > totalPointsA) {
+            matchWinnerId = match.teamB.id;
+          }
+        }
+      }
+
+      if (matchWinnerId === match.teamA.id) {
         rowA.won += 1;
         rowB.lost += 1;
-      } else if (match.winnerId === match.teamB.id) {
+      } else if (matchWinnerId === match.teamB.id) {
         rowB.won += 1;
         rowA.lost += 1;
       }

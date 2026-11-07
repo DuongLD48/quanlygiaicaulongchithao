@@ -77,6 +77,33 @@ export class Category {
     return list;
   }
 
+  /**
+   * Tự động đồng bộ thể thức từ rulesConfig vào tất cả các trận đấu trong nội dung
+   */
+  public syncMatchesWithRules(): void {
+    if (!this.rulesConfig) return;
+
+    // 1. Đồng bộ vòng bảng
+    const groupRule = this.rulesConfig.groupStage;
+    for (const group of this.groups) {
+      for (const match of group.matches) {
+        match.rule = groupRule;
+        if (match.status !== 'FINISHED') {
+          match.recalculateStatus();
+        }
+      }
+    }
+
+    // 2. Đồng bộ vòng knockout
+    for (const match of this.knockoutMatches) {
+      const stageRule = this.rulesConfig.getRuleForStage(match.roundName);
+      match.rule = stageRule;
+      if (match.status !== 'FINISHED') {
+        match.recalculateStatus();
+      }
+    }
+  }
+
   public toJSON(): ICategoryJSON {
     return {
       id: this.id,
@@ -93,7 +120,7 @@ export class Category {
     const groups = (json.groups || []).map((g) => Group.fromJSON(g));
     const knockoutMatches = (json.knockoutMatches || []).map((m) => Match.fromJSON(m));
 
-    return new Category(
+    const category = new Category(
       json.id,
       json.name,
       json.type || 'CUSTOM',
@@ -101,5 +128,10 @@ export class Category {
       groups,
       knockoutMatches
     );
+
+    // Đồng bộ quy tắc thể thức vào từng trận đấu
+    category.syncMatchesWithRules();
+
+    return category;
   }
 }

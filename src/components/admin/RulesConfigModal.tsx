@@ -41,18 +41,9 @@ export const RulesConfigModal: React.FC<Props> = ({
     setConfig(nextConfig);
   };
 
-  const handleApplyPreset = (preset: '1c_31' | '3c_21' | '3c_15') => {
-    if (preset === '1c_31') {
-      updateCurrentRule({ setsCount: 1, pointsPerSet: 31, maxPoints: 31, deuceEnabled: false });
-    } else if (preset === '3c_21') {
-      updateCurrentRule({ setsCount: 3, pointsPerSet: 21, maxPoints: 30, deuceEnabled: true });
-    } else if (preset === '3c_15') {
-      updateCurrentRule({ setsCount: 3, pointsPerSet: 15, maxPoints: 21, deuceEnabled: true });
-    }
-  };
-
   const handleSave = () => {
     category.rulesConfig = config;
+    category.syncMatchesWithRules();
     onSave(category);
     onClose();
   };
@@ -62,16 +53,16 @@ export const RulesConfigModal: React.FC<Props> = ({
     label: string;
   }> = [
     { key: 'groupStage', label: 'Vòng Bảng' },
-    { key: 'roundOf16', label: 'Vòng Loại (1/8)' },
+    { key: 'roundOf16', label: 'Vòng 1/8' },
     { key: 'quarterFinals', label: 'Tứ Kết' },
     { key: 'semiFinals', label: 'Bán Kết' },
     { key: 'finals', label: 'Chung Kết' },
-    { key: 'thirdPlace', label: 'Tranh Hạng 3-4' },
+    { key: 'thirdPlace', label: 'Tranh Hạng 3' },
   ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
-      <div className="bg-[#0c1524] rounded-3xl shadow-2xl max-w-2xl w-full border border-[#16263f] overflow-hidden flex flex-col max-h-[90vh] text-slate-100">
+      <div className="bg-[#0c1524] rounded-3xl shadow-2xl max-w-3xl w-full border border-[#16263f] overflow-hidden flex flex-col max-h-[90vh] text-slate-100">
         {/* Header */}
         <div className="flex items-center justify-between p-4 bg-[#091120] border-b border-[#16263f]">
           <div className="flex items-center gap-2.5">
@@ -89,67 +80,45 @@ export const RulesConfigModal: React.FC<Props> = ({
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-lg bg-[#121f33] hover:bg-[#1a2b45] text-slate-400 hover:text-white flex items-center justify-center transition"
+            className="w-7 h-7 rounded-lg bg-[#121f33] hover:bg-[#1a2b45] text-slate-400 hover:text-white flex items-center justify-center transition cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Tabs for Stage / Round */}
-        <div className="flex overflow-x-auto border-b border-[#16263f] bg-[#070d19] px-4 pt-2 gap-1 scrollbar-none">
-          {tabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`px-3 py-1.5 text-xs font-bold whitespace-nowrap rounded-t-lg transition border-t-2 cursor-pointer ${
-                activeTab === tab.key
-                  ? 'bg-[#0c1524] text-cyan-400 border-cyan-400 shadow-sm'
-                  : 'text-slate-400 hover:text-white border-transparent hover:bg-[#091120]'
-              }`}
-            >
-              {tab.label}
-              <span className="ml-1 text-[10px] opacity-75 font-normal">
-                ({config[tab.key].setsCount}c/{config[tab.key].pointsPerSet}đ)
-              </span>
-            </button>
-          ))}
+        <div className="p-3 bg-[#070d19] border-b border-[#16263f]">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-1.5">
+            {tabs.map((tab) => {
+              const isSelected = activeTab === tab.key;
+              const rule = config[tab.key];
+              return (
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`p-2 rounded-xl text-xs font-bold transition flex flex-col items-center justify-center text-center cursor-pointer border ${
+                    isSelected
+                      ? 'bg-cyan-500 text-black border-cyan-400 shadow-[0_0_12px_rgba(0,229,255,0.25)] font-black'
+                      : 'bg-[#091120] text-slate-300 border-[#16263f] hover:border-cyan-500/40 hover:text-white hover:bg-[#0d1829]'
+                  }`}
+                >
+                  <span className="truncate w-full">{tab.label}</span>
+                  <span
+                    className={`text-[10px] mt-0.5 font-mono ${
+                      isSelected ? 'text-black/80 font-bold' : 'text-cyan-400 font-medium'
+                    }`}
+                  >
+                    {rule.setsCount}c • {rule.pointsPerSet}đ
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Body Settings */}
         <div className="p-5 overflow-y-auto space-y-5 flex-1 text-xs">
-          {/* Presets */}
-          <div className="space-y-2">
-            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-              Mẫu Thiết Lập Nhanh:
-            </span>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => handleApplyPreset('1c_31')}
-                className="p-2.5 rounded-xl border border-[#16263f] bg-[#091120] hover:border-cyan-500/50 hover:bg-[#11233e] text-left transition"
-              >
-                <div className="font-bold text-white text-xs">1 Set 31 Điểm</div>
-                <div className="text-[10px] text-slate-400">Không deuce (Chạm 31 thắng)</div>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleApplyPreset('3c_21')}
-                className="p-2.5 rounded-xl border border-[#16263f] bg-[#091120] hover:border-cyan-500/50 hover:bg-[#11233e] text-left transition"
-              >
-                <div className="font-bold text-white text-xs">3 Set 21 Điểm (BWF)</div>
-                <div className="text-[10px] text-slate-400">Thắng 2 set, deuce trần 30</div>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleApplyPreset('3c_15')}
-                className="p-2.5 rounded-xl border border-[#16263f] bg-[#091120] hover:border-cyan-500/50 hover:bg-[#11233e] text-left transition"
-              >
-                <div className="font-bold text-white text-xs">3 Set 15 Điểm Rút Gọn</div>
-                <div className="text-[10px] text-slate-400">Thắng 2 set, deuce trần 21</div>
-              </button>
-            </div>
-          </div>
-
           {/* Detailed Inputs */}
           <div className="p-4 bg-[#091120] rounded-2xl border border-[#16263f] space-y-4">
             <h4 className="font-black text-white text-xs uppercase tracking-wide text-cyan-300">
