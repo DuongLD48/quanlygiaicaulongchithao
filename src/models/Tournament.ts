@@ -3,6 +3,40 @@ import { Group } from './Group';
 import { MatchRule } from './MatchRule';
 import { StageRuleConfig } from './StageRuleConfig';
 
+export interface ITournamentContentConfig {
+  websiteTitle?: string;
+  tournamentName?: string;
+  tournamentSubtitle?: string;
+  footerText?: string;
+  rulesTitle?: string;
+  rulesGroupStage?: string;
+  rulesKnockoutStage?: string;
+  rulesPointRules?: string;
+  rulesReferees?: string;
+  rulesTieBreak1?: string;
+  rulesTieBreak2?: string;
+  rulesTieBreak3?: string;
+  rulesTieBreak4?: string;
+  rulesAdvancement?: string;
+}
+
+export const DEFAULT_CONTENT_CONFIG: ITournamentContentConfig = {
+  websiteTitle: 'Quản Lý Giải Cầu Lông - CLB Cầu Lông Chí Thảo',
+  tournamentName: 'Giải Cầu Lông CLB Chí Thảo 2026',
+  tournamentSubtitle: 'Tiêu chuẩn thi đấu và xếp hạng thời gian thực',
+  footerText: 'Giải Cầu Lông CLB Chí Thảo 2026 • CLB Cầu Lông Chí Thảo',
+  rulesTitle: 'Điều Lệ & Quy Tắc Tính Điểm Giải Đấu',
+  rulesGroupStage: 'Thi đấu vòng tròn tính điểm. Tất cả các trận Vòng Bảng thi đấu 1 set chạm 21 hoặc 31 điểm (tùy thể thức cài đặt), đổi sân khi một đội đạt mốc nửa set (11 hoặc 16 điểm).',
+  rulesKnockoutStage: 'Bán kết & Chung kết thi đấu loại trực tiếp. Đội thắng giành quyền đi tiếp vào Chung kết, đội thua vào tranh Hạng Ba.',
+  rulesPointRules: 'Đội đạt đến mốc điểm quy định trước sẽ giành chiến thắng trong trận đấu (áp dụng deuce cách biệt 2 điểm nếu được cấu hình).',
+  rulesReferees: 'Các trận đấu được điều phối tự động phân bổ theo sân và thời gian hiển thị trên hệ thống.',
+  rulesTieBreak1: 'Xếp hạng ưu tiên theo tổng số trận thắng nhiều nhất (Thắng: +1 điểm, Thua: 0 điểm).',
+  rulesTieBreak2: 'Tổng số điểm quả ghi được trừ đi tổng số điểm quả bị mất (+/-).',
+  rulesTieBreak3: 'Tổng số điểm quả đội đã ghi được trong tất cả các trận vòng bảng.',
+  rulesTieBreak4: 'Nếu vẫn bằng nhau, xét kết quả trận đối đầu trực tiếp giữa hai đội.',
+  rulesAdvancement: 'Top 1 (Nhất bảng) và Top 2 (Nhì bảng) của mỗi bảng đấu sẽ giành quyền vào thi đấu Vòng Loại Trực Tiếp (Bán kết chéo bảng).',
+};
+
 export interface ITournamentJSON {
   id: string;
   name: string;
@@ -12,6 +46,7 @@ export interface ITournamentJSON {
   courts: string[];
   adminPinHash: string;
   categories: ICategoryJSON[];
+  contentConfig?: ITournamentContentConfig;
 }
 
 export class Tournament {
@@ -23,6 +58,7 @@ export class Tournament {
   public courts: string[];
   public adminPinHash: string;
   public categories: Category[];
+  public contentConfig: ITournamentContentConfig;
 
   constructor(
     id: string,
@@ -32,7 +68,8 @@ export class Tournament {
     endDate: string = '',
     courts: string[] = ['Sân 1', 'Sân 2', 'Sân 3'],
     adminPinHash: string = '',
-    categories: Category[] = []
+    categories: Category[] = [],
+    contentConfig: ITournamentContentConfig = { ...DEFAULT_CONTENT_CONFIG }
   ) {
     this.id = id || `tourney_${Date.now()}`;
     this.name = name.trim();
@@ -45,6 +82,7 @@ export class Tournament {
       adminPinHash ||
       '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92'; // sha256("123456")
     this.categories = categories;
+    this.contentConfig = { ...DEFAULT_CONTENT_CONFIG, ...contentConfig };
   }
 
   public addCategory(category: Category): void {
@@ -98,6 +136,7 @@ export class Tournament {
       courts: this.courts,
       adminPinHash: this.adminPinHash,
       categories: this.categories.map((c) => c.toJSON()),
+      contentConfig: this.contentConfig,
     };
   }
 
@@ -111,7 +150,8 @@ export class Tournament {
       json.endDate,
       json.courts,
       json.adminPinHash,
-      categories
+      categories,
+      json.contentConfig ? { ...DEFAULT_CONTENT_CONFIG, ...json.contentConfig } : { ...DEFAULT_CONTENT_CONFIG }
     );
   }
 

@@ -6,3 +6,4 @@ export * from './FixtureManager';
 export * from './ScoreModal';
 export * from './KnockoutManager';
 export * from './DatabaseConfigModal';
+export * from './WebsiteContentManager';

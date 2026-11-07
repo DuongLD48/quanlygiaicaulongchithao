@@ -10,6 +10,7 @@ import {
   Shuffle,
   Users,
   Layers,
+  Globe,
 } from 'lucide-react';
 
 export type MainTab =
@@ -19,7 +20,8 @@ export type MainTab =
   | 'MATCHES_ADMIN'
   | 'FIXTURES_ADMIN'
   | 'TEAMS_GROUPS'
-  | 'KNOCKOUT_ADMIN';
+  | 'KNOCKOUT_ADMIN'
+  | 'WEBSITE_CONTENT';
 
 interface Props {
   activeTab: MainTab;
@@ -139,6 +141,19 @@ export const Header: React.FC<Props> = ({
                 >
                   <Layers className="w-3 h-3" />
                   <span>Cài Vòng Trong</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onTabChange('WEBSITE_CONTENT')}
+                  className={`px-2.5 py-1 rounded-md text-[11px] font-black tracking-wide uppercase transition flex items-center gap-1 whitespace-nowrap cursor-pointer ${
+                    activeTab === 'WEBSITE_CONTENT'
+                      ? 'bg-amber-400 text-black shadow-[0_0_12px_rgba(251,191,36,0.4)]'
+                      : 'text-amber-300 hover:bg-amber-950/40 border border-amber-500/30'
+                  }`}
+                >
+                  <Globe className="w-3 h-3" />
+                  <span>Sửa Nội Dung Web</span>
                 </button>
               </>
             )}

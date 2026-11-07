@@ -163,9 +163,14 @@ export const ScoreModal: React.FC<Props> = ({ match, isOpen, onClose, onSave }) 
               }`}
             >
               <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Đội 1 (A)</div>
-              <div className="font-bold text-white text-xs sm:text-sm mt-0.5 truncate">
-                {workingMatch.teamA?.getDisplayName() || 'Chưa xác định'}
+              <div className="font-black text-cyan-300 text-xs sm:text-sm mt-0.5 truncate">
+                {workingMatch.teamA?.name || 'Đội A'}
               </div>
+              {workingMatch.teamA?.players && workingMatch.teamA.players.length > 0 && (
+                <div className="text-[11px] text-slate-300 font-medium mt-0.5 truncate">
+                  {workingMatch.teamA.players.map((p) => p.fullName).join(' / ')}
+                </div>
+              )}
               {winnerId === workingMatch.teamA?.id && (
                 <div className="inline-flex items-center gap-1 mt-1.5 text-[10px] font-black text-cyan-300 bg-cyan-950 px-2 py-0.5 rounded-full border border-cyan-500/40">
                   <Trophy className="w-3 h-3 text-amber-300" /> Thắng cuộc
@@ -182,9 +187,14 @@ export const ScoreModal: React.FC<Props> = ({ match, isOpen, onClose, onSave }) 
               }`}
             >
               <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Đội 2 (B)</div>
-              <div className="font-bold text-white text-xs sm:text-sm mt-0.5 truncate">
-                {workingMatch.teamB?.getDisplayName() || 'Chưa xác định'}
+              <div className="font-black text-cyan-300 text-xs sm:text-sm mt-0.5 truncate">
+                {workingMatch.teamB?.name || 'Đội B'}
               </div>
+              {workingMatch.teamB?.players && workingMatch.teamB.players.length > 0 && (
+                <div className="text-[11px] text-slate-300 font-medium mt-0.5 truncate">
+                  {workingMatch.teamB.players.map((p) => p.fullName).join(' / ')}
+                </div>
+              )}
               {winnerId === workingMatch.teamB?.id && (
                 <div className="inline-flex items-center gap-1 mt-1.5 text-[10px] font-black text-cyan-300 bg-cyan-950 px-2 py-0.5 rounded-full border border-cyan-500/40">
                   <Trophy className="w-3 h-3 text-amber-300" /> Thắng cuộc
@@ -229,7 +239,7 @@ export const ScoreModal: React.FC<Props> = ({ match, isOpen, onClose, onSave }) 
                       onChange={(e) =>
                         handleDirectScoreChange(setIdx, 'teamA', parseInt(e.target.value, 10))
                       }
-                      className="w-14 h-12 text-center text-2xl font-black bg-[#070d19] border-2 border-cyan-500 rounded-xl text-white focus:outline-none"
+                      className="w-14 h-12 text-center text-2xl font-black bg-[#070d19] border-2 border-cyan-500 rounded-xl text-white focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                     <button
                       type="button"
@@ -257,7 +267,7 @@ export const ScoreModal: React.FC<Props> = ({ match, isOpen, onClose, onSave }) 
                       onChange={(e) =>
                         handleDirectScoreChange(setIdx, 'teamB', parseInt(e.target.value, 10))
                       }
-                      className="w-14 h-12 text-center text-2xl font-black bg-[#070d19] border-2 border-cyan-500 rounded-xl text-white focus:outline-none"
+                      className="w-14 h-12 text-center text-2xl font-black bg-[#070d19] border-2 border-cyan-500 rounded-xl text-white focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                     <button
                       type="button"
@@ -330,7 +340,7 @@ export const ScoreModal: React.FC<Props> = ({ match, isOpen, onClose, onSave }) 
             className="px-5 py-2 bg-cyan-600 hover:bg-cyan-500 text-black font-black rounded-xl text-xs shadow-lg shadow-cyan-600/25 flex items-center gap-1.5 transition cursor-pointer"
           >
             <Check className="w-4 h-4" />
-            Lưu Tỷ Số & Cập Nhật Realtime
+            Lưu Tỷ Số
           </button>
         </div>
       </div>

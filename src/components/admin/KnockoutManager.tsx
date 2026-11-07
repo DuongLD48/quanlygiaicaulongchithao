@@ -460,12 +460,15 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
             </div>
 
             <div>
-              <label className="text-[11px] font-semibold text-slate-300 block mb-1">Giờ đấu</label>
+              <label className="text-[11px] font-semibold text-slate-300 block mb-1">Giờ đấu (24h)</label>
               <input
-                type="time"
+                type="text"
+                list="time-presets-24h"
+                placeholder="14:00 (24h)"
+                maxLength={5}
                 value={customTime}
                 onChange={(e) => setCustomTime(e.target.value)}
-                className="w-full px-3 py-1.5 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
+                className="w-full px-3 py-1.5 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs font-mono text-white focus:border-cyan-400 focus:outline-none"
               />
             </div>
           </div>
@@ -829,15 +832,18 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Giờ đấu</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">Giờ đấu (24h)</label>
                 <input
-                  type="time"
+                  type="text"
+                  list="time-presets-24h"
+                  placeholder="14:00 (24h)"
+                  maxLength={5}
                   value={editingMatch.scheduledTime}
                   onChange={(e) => {
                     editingMatch.scheduledTime = e.target.value;
                     setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
                   }}
-                  className="w-full px-3 py-1.5 bg-[#070d19] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
+                  className="w-full px-3 py-1.5 bg-[#070d19] border border-[#1d3252] rounded-xl text-xs font-mono text-white focus:border-cyan-400 focus:outline-none"
                 />
               </div>
             </div>
@@ -870,6 +876,38 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
           onSave={handleSaveScore}
         />
       )}
+
+      {/* Datalist 24h presets */}
+      <datalist id="time-presets-24h">
+        <option value="07:00" />
+        <option value="07:30" />
+        <option value="08:00" />
+        <option value="08:25" />
+        <option value="08:30" />
+        <option value="08:50" />
+        <option value="09:00" />
+        <option value="09:15" />
+        <option value="09:30" />
+        <option value="10:00" />
+        <option value="10:30" />
+        <option value="11:00" />
+        <option value="13:30" />
+        <option value="14:00" />
+        <option value="14:30" />
+        <option value="15:00" />
+        <option value="15:30" />
+        <option value="16:00" />
+        <option value="16:30" />
+        <option value="17:00" />
+        <option value="17:30" />
+        <option value="18:00" />
+        <option value="18:30" />
+        <option value="19:00" />
+        <option value="19:30" />
+        <option value="20:00" />
+        <option value="20:30" />
+        <option value="21:00" />
+      </datalist>
     </div>
   );
 };

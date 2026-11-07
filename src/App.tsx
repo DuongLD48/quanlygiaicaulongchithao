@@ -15,6 +15,7 @@ import {
   KnockoutManager,
   AdminAuthModal,
   DatabaseConfigModal,
+  WebsiteContentManager,
 } from './components/admin';
 import {
   RefreshCw,
@@ -42,6 +43,15 @@ const TournamentDashboard: React.FC = () => {
   const [isInitializing, setIsInitializing] = useState(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const [isDbModalOpen, setIsDbModalOpen] = useState(false);
+
+  // Cập nhật tiêu đề trang web động
+  React.useEffect(() => {
+    if (tournament?.contentConfig?.websiteTitle) {
+      document.title = tournament.contentConfig.websiteTitle;
+    } else if (tournament?.name) {
+      document.title = `${tournament.name} - Quản Lý Giải Cầu Lông`;
+    }
+  }, [tournament]);
 
   // Chọn Category hợp lệ
   const activeCategory = tournament
@@ -284,6 +294,10 @@ const TournamentDashboard: React.FC = () => {
             {isAdmin && activeTab === 'KNOCKOUT_ADMIN' && (
               <KnockoutManager category={activeCategory} />
             )}
+
+            {isAdmin && activeTab === 'WEBSITE_CONTENT' && (
+              <WebsiteContentManager />
+            )}
           </div>
         ) : (
           <div className="p-12 text-center text-slate-500 text-xs bg-[#0c1524] rounded-2xl border border-[#16263f]">
@@ -295,7 +309,7 @@ const TournamentDashboard: React.FC = () => {
       {/* Footer */}
       <footer className="bg-[#08101c] border-t border-[#14233a] py-4 mt-auto text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p>© 2026 {tournament.name} • CLB Cầu Lông Chí Thảo</p>
+          <p>© 2026 {tournament.contentConfig?.footerText || `${tournament.name} • CLB Cầu Lông Chí Thảo`}</p>
           <button
             type="button"
             onClick={() => setIsAdminModalOpen(true)}

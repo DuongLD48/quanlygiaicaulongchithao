@@ -1,35 +1,97 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Category, Match } from '../../models';
-import { Trophy, Award, Play, CheckCircle2, MapPin, Clock } from 'lucide-react';
+import { useTournament } from '../../context/TournamentContext';
+import { KnockoutScheduler } from '../../engine';
+import { ScoreModal } from '../admin/ScoreModal';
+import {
+  Trophy,
+  Award,
+  Play,
+  CheckCircle2,
+  Layers,
+  Edit2,
+} from 'lucide-react';
 
 interface Props {
   category: Category;
 }
 
 export const KnockoutBracketView: React.FC<Props> = ({ category }) => {
-  const koMatches = category.knockoutMatches;
+  const { tournament, saveTournament, isAdmin } = useTournament();
+  const [selectedStageTab, setSelectedStageTab] = useState<string>('ALL');
+  const [scoringMatch, setScoringMatch] = useState<Match | null>(null);
 
-  const sf1 = koMatches.find(
-    (m) => m.roundName.includes('Bán kết 1') || m.matchCode.endsWith('BK-01')
-  );
-  const sf2 = koMatches.find(
-    (m) => m.roundName.includes('Bán kết 2') || m.matchCode.endsWith('BK-02')
-  );
-  const finalMatch = koMatches.find(
-    (m) => m.roundName.includes('Chung kết') && !m.roundName.includes('Bán kết')
-  );
-  const thirdMatch = koMatches.find(
-    (m) => m.roundName.includes('Tranh') || m.roundName.includes('hạng 3')
+  const koMatches = category.knockoutMatches || [];
+
+  // Phân loại các trận Knockout theo từng vòng đấu
+  const r16Matches = koMatches.filter(
+    (m) =>
+      m.roundName.includes('1/8') ||
+      m.roundName.includes('16') ||
+      m.matchCode.includes('V18') ||
+      m.matchCode.includes('R16')
   );
 
-  const champion = finalMatch?.getWinner();
+  const qfMatches = koMatches.filter(
+    (m) =>
+      (m.roundName.toLowerCase().includes('tứ kết') ||
+        m.roundName.toLowerCase().includes('quarter') ||
+        m.matchCode.includes('TK')) &&
+      !m.roundName.includes('1/8')
+  );
+
+  const sfMatches = koMatches.filter(
+    (m) =>
+      m.roundName.toLowerCase().includes('bán kết') ||
+      m.roundName.toLowerCase().includes('semi') ||
+      m.matchCode.includes('BK')
+  );
+
+  const finalMatches = koMatches.filter(
+    (m) =>
+      (m.roundName.toLowerCase().includes('chung kết') || m.matchCode.includes('CK')) &&
+      !m.roundName.toLowerCase().includes('bán kết')
+  );
+
+  const thirdPlaceMatches = koMatches.filter(
+    (m) =>
+      m.roundName.toLowerCase().includes('tranh') ||
+      m.roundName.toLowerCase().includes('hạng 3') ||
+      m.roundName.toLowerCase().includes('hạng ba') ||
+      m.matchCode.includes('TH3')
+  );
+
+  const otherMatches = koMatches.filter(
+    (m) =>
+      !r16Matches.includes(m) &&
+      !qfMatches.includes(m) &&
+      !sfMatches.includes(m) &&
+      !finalMatches.includes(m) &&
+      !thirdPlaceMatches.includes(m)
+  );
+
+  // Xác định các vị trí bục vinh quang (Podium)
+  const primaryFinal = finalMatches[0];
+  const primaryThird = thirdPlaceMatches[0];
+
+  const champion = primaryFinal?.getWinner();
   const runnerUp =
-    finalMatch?.status === 'FINISHED' && finalMatch?.winnerId
-      ? finalMatch.winnerId === finalMatch.teamA?.id
-        ? finalMatch.teamB
-        : finalMatch.teamA
+    primaryFinal?.status === 'FINISHED' && primaryFinal?.winnerId
+      ? primaryFinal.winnerId === primaryFinal.teamA?.id
+        ? primaryFinal.teamB
+        : primaryFinal.teamA
       : null;
-  const thirdPlace = thirdMatch?.getWinner();
+  const thirdPlace = primaryThird?.getWinner();
+
+  const handleSaveScore = async (updatedMatch: Match) => {
+    if (!tournament) return;
+    const idx = category.knockoutMatches.findIndex((m) => m.id === updatedMatch.id);
+    if (idx !== -1) {
+      category.knockoutMatches[idx] = updatedMatch;
+      KnockoutScheduler.propagateWinners(category.knockoutMatches);
+      await saveTournament(tournament);
+    }
+  };
 
   if (koMatches.length === 0) {
     return (
@@ -43,133 +105,216 @@ export const KnockoutBracketView: React.FC<Props> = ({ category }) => {
     );
   }
 
-  const renderMatchCard = (match?: Match, title?: string) => {
-    if (!match) return null;
-
+  // Render từng thẻ trận đấu đồng bộ Cyber Dark
+  const renderMatchCard = (match: Match) => {
     const isFinished = match.status === 'FINISHED';
     const isPlaying = match.status === 'PLAYING';
     const teamAWon = match.winnerId === match.teamA?.id;
     const teamBWon = match.winnerId === match.teamB?.id;
 
+    const teamAName = match.teamA?.name || 'Đội 1';
+    const teamBName = match.teamB?.name || 'Đội 2';
+    const athletesA = match.teamA?.players?.map((p) => p.fullName).join(' / ') || '';
+    const athletesB = match.teamB?.players?.map((p) => p.fullName).join(' / ') || '';
+
     return (
       <div
-        className={`bg-[#0c1524] rounded-2xl border p-4 shadow-xl w-full max-w-sm transition ${
+        key={match.id}
+        className={`bg-[#0c1524] rounded-2xl border p-4 shadow-xl transition flex flex-col justify-between ${
           isPlaying
             ? 'border-amber-400/80 ring-2 ring-amber-400/20'
             : isFinished
-            ? 'border-cyan-500/40'
-            : 'border-[#16263f]'
+            ? 'border-cyan-500/40 hover:border-cyan-400/60'
+            : 'border-[#16263f] hover:border-[#223b61]'
         }`}
       >
-        <div className="flex items-center justify-between pb-2.5 border-b border-[#16263f] text-xs">
-          <span className="font-bold text-cyan-300 uppercase tracking-wide text-[11px]">
-            {title || match.roundName}
-          </span>
-          <div className="flex items-center gap-2">
-            <span className="px-1.5 py-0.5 rounded bg-[#101e33] border border-[#1d3252] text-[10px] font-mono font-black text-cyan-300">
-              {match.matchCode}
-            </span>
-            {isPlaying ? (
-              <span className="text-[10px] font-bold text-amber-300 bg-amber-950/80 border border-amber-500/40 px-2 py-0.5 rounded-full flex items-center gap-1">
-                <Play className="w-2.5 h-2.5 fill-current" /> Đang đấu
+        <div>
+          {/* Header row: Mã trận, Sân • Giờ, Trạng thái */}
+          <div className="flex items-center justify-between pb-2.5 border-b border-[#16263f] text-xs">
+            <div className="flex items-center gap-2">
+              <span className="font-black text-cyan-400 font-mono text-xs">
+                #{match.matchCode}
               </span>
-            ) : isFinished ? (
-              <span className="text-[10px] font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-2 py-0.5 rounded-full flex items-center gap-1">
-                <CheckCircle2 className="w-2.5 h-2.5" /> Xong
+              <span className="text-cyan-300 font-medium text-[11px]">
+                {match.court || 'Sân ?'} • {match.scheduledTime || '--:--'}
               </span>
-            ) : (
-              <span className="text-[10px] text-slate-400 font-mono">
-                {match.scheduledTime || 'Chưa đấu'}
+            </div>
+
+            <div>
+              {isPlaying ? (
+                <span className="text-[10px] font-bold text-amber-300 bg-amber-950/80 border border-amber-500/40 px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <Play className="w-2.5 h-2.5 fill-current" /> Đang đấu
+                </span>
+              ) : isFinished ? (
+                <span className="text-[10px] font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <CheckCircle2 className="w-2.5 h-2.5" /> [Đã đấu]
+                </span>
+              ) : (
+                <span className="text-[10px] text-slate-400 bg-[#091120] border border-[#16263f] px-2 py-0.5 rounded-full">
+                  Chưa đấu
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Vòng thi đấu tag */}
+          <div className="pt-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+            <span>{match.roundName}</span>
+            {match.rule && (
+              <span className="text-slate-500 text-[10px] font-normal lowercase">
+                {match.rule.setsCount} set • {match.rule.pointsPerSet}đ
               </span>
             )}
           </div>
-        </div>
 
-        <div className="py-3 space-y-2.5">
-          {/* Đội A */}
-          <div
-            className={`flex items-center justify-between p-2 rounded-xl transition ${
-              teamAWon
-                ? 'bg-cyan-950/40 border border-cyan-500/30'
-                : 'bg-[#091120] border border-[#14233a]'
-            }`}
-          >
-            <div className="min-w-0 flex-1">
-              <div className={`text-xs truncate ${teamAWon ? 'font-black text-white' : 'font-semibold text-slate-300'}`}>
-                {match.teamA?.getDisplayName() || 'Chờ xác định (Nhất/Nhì)'}
-              </div>
-              {match.teamA?.players && match.teamA.players.length > 0 && (
-                <div className="text-[10px] text-slate-500 truncate">
-                  {match.teamA.players.map((p) => p.fullName).join(' • ')}
-                </div>
-              )}
-            </div>
-            <div className="flex items-center gap-1 font-mono font-black ml-2">
-              {match.scores.map((set, idx) => (
+          {/* Body: Danh sách 2 đội */}
+          <div className="py-2.5 space-y-2">
+            {/* Đội A */}
+            <div
+              className={`flex items-center justify-between p-2 rounded-xl transition ${
+                teamAWon
+                  ? 'bg-cyan-950/40 border border-cyan-500/40'
+                  : 'bg-[#091120] border border-[#14233a]'
+              }`}
+            >
+              <div className="flex items-center gap-2 min-w-0 flex-1">
                 <span
-                  key={idx}
-                  className={`px-2 py-0.5 rounded text-xs ${
-                    match.rule.getSetWinner(set.teamA, set.teamB) === 'A'
-                      ? 'bg-cyan-500 text-black font-extrabold'
-                      : 'bg-[#101e33] text-slate-400'
+                  className={`w-6 h-6 rounded-md font-black text-[11px] flex items-center justify-center shrink-0 ${
+                    teamAWon
+                      ? 'bg-cyan-500 text-black shadow-sm shadow-cyan-500/40'
+                      : 'bg-[#121f33] text-cyan-400 border border-[#1f3554]'
                   }`}
                 >
-                  {set.teamA}
+                  {teamAName.substring(0, 3)}
                 </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Đội B */}
-          <div
-            className={`flex items-center justify-between p-2 rounded-xl transition ${
-              teamBWon
-                ? 'bg-cyan-950/40 border border-cyan-500/30'
-                : 'bg-[#091120] border border-[#14233a]'
-            }`}
-          >
-            <div className="min-w-0 flex-1">
-              <div className={`text-xs truncate ${teamBWon ? 'font-black text-white' : 'font-semibold text-slate-300'}`}>
-                {match.teamB?.getDisplayName() || 'Chờ xác định (Nhất/Nhì)'}
-              </div>
-              {match.teamB?.players && match.teamB.players.length > 0 && (
-                <div className="text-[10px] text-slate-500 truncate">
-                  {match.teamB.players.map((p) => p.fullName).join(' • ')}
+                <div className="min-w-0 flex-1">
+                  <span
+                    className={`text-xs block truncate ${
+                      teamAWon ? 'font-black text-white' : 'font-semibold text-slate-300'
+                    }`}
+                  >
+                    {teamAName}
+                  </span>
+                  {athletesA && (
+                    <span className="text-[10px] text-slate-400 truncate block">
+                      {athletesA}
+                    </span>
+                  )}
                 </div>
-              )}
+              </div>
+
+              {/* Tỉ số Đội A */}
+              <div className="flex items-center gap-1 ml-2 font-mono font-black">
+                {match.scores.map((set, idx) => (
+                  <span
+                    key={idx}
+                    className={`min-w-7 h-6 px-1.5 rounded-md flex items-center justify-center text-xs ${
+                      match.rule.getSetWinner(set.teamA, set.teamB) === 'A'
+                        ? 'bg-cyan-500 text-black font-extrabold shadow-sm'
+                        : 'bg-[#101e33] text-slate-400'
+                    }`}
+                  >
+                    {set.teamA}
+                  </span>
+                ))}
+              </div>
             </div>
-            <div className="flex items-center gap-1 font-mono font-black ml-2">
-              {match.scores.map((set, idx) => (
+
+            {/* Đội B */}
+            <div
+              className={`flex items-center justify-between p-2 rounded-xl transition ${
+                teamBWon
+                  ? 'bg-cyan-950/40 border border-cyan-500/40'
+                  : 'bg-[#091120] border border-[#14233a]'
+              }`}
+            >
+              <div className="flex items-center gap-2 min-w-0 flex-1">
                 <span
-                  key={idx}
-                  className={`px-2 py-0.5 rounded text-xs ${
-                    match.rule.getSetWinner(set.teamA, set.teamB) === 'B'
-                      ? 'bg-cyan-500 text-black font-extrabold'
-                      : 'bg-[#101e33] text-slate-400'
+                  className={`w-6 h-6 rounded-md font-black text-[11px] flex items-center justify-center shrink-0 ${
+                    teamBWon
+                      ? 'bg-cyan-500 text-black shadow-sm shadow-cyan-500/40'
+                      : 'bg-[#121f33] text-cyan-400 border border-[#1f3554]'
                   }`}
                 >
-                  {set.teamB}
+                  {teamBName.substring(0, 3)}
                 </span>
-              ))}
+                <div className="min-w-0 flex-1">
+                  <span
+                    className={`text-xs block truncate ${
+                      teamBWon ? 'font-black text-white' : 'font-semibold text-slate-300'
+                    }`}
+                  >
+                    {teamBName}
+                  </span>
+                  {athletesB && (
+                    <span className="text-[10px] text-slate-400 truncate block">
+                      {athletesB}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Tỉ số Đội B */}
+              <div className="flex items-center gap-1 ml-2 font-mono font-black">
+                {match.scores.map((set, idx) => (
+                  <span
+                    key={idx}
+                    className={`min-w-7 h-6 px-1.5 rounded-md flex items-center justify-center text-xs ${
+                      match.rule.getSetWinner(set.teamA, set.teamB) === 'B'
+                        ? 'bg-cyan-500 text-black font-extrabold shadow-sm'
+                        : 'bg-[#101e33] text-slate-400'
+                    }`}
+                  >
+                    {set.teamB}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="pt-2 border-t border-[#16263f] flex items-center justify-between text-[11px] text-slate-400">
-          <span className="flex items-center gap-1">
-            <MapPin className="w-3 h-3 text-slate-500" />
-            {match.court || 'Chưa xếp sân'}
-          </span>
-          {match.scheduledTime && (
-            <span className="flex items-center gap-1">
-              <Clock className="w-3 h-3 text-slate-500" />
-              {match.scheduledTime}
-            </span>
-          )}
-        </div>
+        {/* Footer của thẻ: Xem chi tiết / Nhập điểm nếu admin */}
+        {isAdmin && (
+          <div className="pt-2 border-t border-[#16263f] flex items-center justify-end">
+            <button
+              type="button"
+              onClick={() => setScoringMatch(match)}
+              className="px-2.5 py-1 bg-[#101e33] hover:bg-cyan-600 hover:text-black text-cyan-300 text-[11px] font-bold rounded-lg border border-[#1d3252] flex items-center gap-1 transition cursor-pointer"
+            >
+              <Edit2 className="w-3 h-3" />
+              Nhập Điểm
+            </button>
+          </div>
+        )}
       </div>
     );
   };
+
+  // Các tabs lọc vòng
+  const stageTabs: Array<{ id: string; label: string; count: number }> = [
+    { id: 'ALL', label: 'Tất Cả', count: koMatches.length },
+    ...(r16Matches.length > 0
+      ? [{ id: 'R16', label: 'Vòng 1/8', count: r16Matches.length }]
+      : []),
+    ...(qfMatches.length > 0
+      ? [{ id: 'QF', label: 'Tứ Kết', count: qfMatches.length }]
+      : []),
+    ...(sfMatches.length > 0
+      ? [{ id: 'SF', label: 'Bán Kết', count: sfMatches.length }]
+      : []),
+    ...(finalMatches.length > 0 || thirdPlaceMatches.length > 0
+      ? [
+          {
+            id: 'FINALS',
+            label: 'Chung Kết & Tranh 3',
+            count: finalMatches.length + thirdPlaceMatches.length,
+          },
+        ]
+      : []),
+    ...(otherMatches.length > 0
+      ? [{ id: 'OTHER', label: 'Vòng Khác', count: otherMatches.length }]
+      : []),
+  ];
 
   return (
     <div className="space-y-6">
@@ -260,35 +405,142 @@ export const KnockoutBracketView: React.FC<Props> = ({ category }) => {
         </div>
       </div>
 
-      {/* Sơ đồ nhánh thi đấu */}
-      <div className="bg-[#0c1524] rounded-2xl border border-[#16263f] p-5 sm:p-6 space-y-6 shadow-xl">
-        <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
-          <Award className="w-4 h-4 text-cyan-400" />
-          Sơ Đồ Nhánh Knockout & Lịch Thi Đấu Vòng Loại
-        </h4>
+      {/* DANH SÁCH CÁC TRẬN ĐẤU VÒNG KNOCKOUT */}
+      <div className="bg-[#0c1524] rounded-2xl border border-[#16263f] p-4 sm:p-6 space-y-6 shadow-xl">
+        {/* Header & Tabs */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#16263f]">
+          <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
+            <Award className="w-4 h-4 text-cyan-400" />
+            Lịch Thi Đấu & Kết Quả Vòng Loại ({category.name})
+          </h4>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-          {/* Cột 1: Bán Kết */}
-          <div className="space-y-4">
-            <div className="text-xs font-bold text-cyan-400 uppercase tracking-wide border-b border-[#16263f] pb-2 flex items-center justify-between">
-              <span>Vòng Bán Kết</span>
-              <span className="text-[10px] text-slate-400">2 cặp đấu</span>
-            </div>
-            {renderMatchCard(sf1, 'Bán Kết 1 (Nhất A vs Nhì B)')}
-            {renderMatchCard(sf2, 'Bán Kết 2 (Nhất B vs Nhì A)')}
-          </div>
-
-          {/* Cột 2: Chung Kết & Tranh Hạng Ba */}
-          <div className="space-y-4">
-            <div className="text-xs font-bold text-amber-400 uppercase tracking-wide border-b border-[#16263f] pb-2 flex items-center justify-between">
-              <span>Chung Kết & Tranh Hạng 3</span>
-              <span className="text-[10px] text-slate-400">Tranh Huy Chương</span>
-            </div>
-            {renderMatchCard(finalMatch, 'Chung Kết (Tranh Cúp Vô Địch)')}
-            {renderMatchCard(thirdMatch, 'Tranh Hạng Ba (Huy Chương Đồng)')}
+          {/* Stage Tabs */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+            {stageTabs.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setSelectedStageTab(tab.id)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                  selectedStageTab === tab.id
+                    ? 'bg-cyan-500 text-black shadow-md shadow-cyan-500/20'
+                    : 'bg-[#091120] text-slate-400 hover:text-white border border-[#16263f]'
+                }`}
+              >
+                <span>{tab.label}</span>
+                <span
+                  className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                    selectedStageTab === tab.id ? 'bg-black/20 text-black' : 'bg-[#14233a] text-slate-400'
+                  }`}
+                >
+                  {tab.count}
+                </span>
+              </button>
+            ))}
           </div>
         </div>
+
+        {/* CÁC PHẦN THEO TỪNG VÒNG */}
+        <div className="space-y-6">
+          {/* 1. Vòng 1/8 */}
+          {r16Matches.length > 0 &&
+            (selectedStageTab === 'ALL' || selectedStageTab === 'R16') && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-[#16263f]">
+                  <span className="text-xs font-black text-cyan-400 uppercase tracking-wide flex items-center gap-1.5">
+                    <Layers className="w-3.5 h-3.5" />
+                    Vòng 1/8 (Round of 16)
+                  </span>
+                  <span className="text-[11px] text-slate-400">{r16Matches.length} trận</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {r16Matches.map(renderMatchCard)}
+                </div>
+              </div>
+            )}
+
+          {/* 2. Tứ Kết */}
+          {qfMatches.length > 0 &&
+            (selectedStageTab === 'ALL' || selectedStageTab === 'QF') && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-[#16263f]">
+                  <span className="text-xs font-black text-cyan-400 uppercase tracking-wide flex items-center gap-1.5">
+                    <Layers className="w-3.5 h-3.5" />
+                    Vòng Tứ Kết (Quarter-Finals)
+                  </span>
+                  <span className="text-[11px] text-slate-400">{qfMatches.length} trận</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {qfMatches.map(renderMatchCard)}
+                </div>
+              </div>
+            )}
+
+          {/* 3. Bán Kết */}
+          {sfMatches.length > 0 &&
+            (selectedStageTab === 'ALL' || selectedStageTab === 'SF') && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-[#16263f]">
+                  <span className="text-xs font-black text-cyan-400 uppercase tracking-wide flex items-center gap-1.5">
+                    <Layers className="w-3.5 h-3.5" />
+                    Vòng Bán Kết (Semi-Finals)
+                  </span>
+                  <span className="text-[11px] text-slate-400">{sfMatches.length} trận</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {sfMatches.map(renderMatchCard)}
+                </div>
+              </div>
+            )}
+
+          {/* 4. Chung Kết & Tranh Hạng Ba */}
+          {(finalMatches.length > 0 || thirdPlaceMatches.length > 0) &&
+            (selectedStageTab === 'ALL' || selectedStageTab === 'FINALS') && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-[#16263f]">
+                  <span className="text-xs font-black text-amber-400 uppercase tracking-wide flex items-center gap-1.5">
+                    <Trophy className="w-3.5 h-3.5" />
+                    Vòng Chung Kết & Tranh Hạng Ba
+                  </span>
+                  <span className="text-[11px] text-slate-400">
+                    {finalMatches.length + thirdPlaceMatches.length} trận
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {finalMatches.map(renderMatchCard)}
+                  {thirdPlaceMatches.map(renderMatchCard)}
+                </div>
+              </div>
+            )}
+
+          {/* 5. Vòng khác (nếu có) */}
+          {otherMatches.length > 0 &&
+            (selectedStageTab === 'ALL' || selectedStageTab === 'OTHER') && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-[#16263f]">
+                  <span className="text-xs font-black text-slate-300 uppercase tracking-wide flex items-center gap-1.5">
+                    <Layers className="w-3.5 h-3.5" />
+                    Các Trận Đấu Khác
+                  </span>
+                  <span className="text-[11px] text-slate-400">{otherMatches.length} trận</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {otherMatches.map(renderMatchCard)}
+                </div>
+              </div>
+            )}
+        </div>
       </div>
+
+      {/* Modal Nhập Điểm (nếu Admin thao tác) */}
+      {scoringMatch && (
+        <ScoreModal
+          match={scoringMatch}
+          isOpen={true}
+          onClose={() => setScoringMatch(null)}
+          onSave={handleSaveScore}
+        />
+      )}
     </div>
   );
 };
