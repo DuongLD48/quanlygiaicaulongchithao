@@ -66,7 +66,7 @@ export class Tournament {
     location: string = 'Nhà Thi Đấu',
     startDate: string = '',
     endDate: string = '',
-    courts: string[] = ['Sân 1', 'Sân 2', 'Sân 3'],
+    courts: string[] = ['Sân 1', 'Sân 2', 'Sân 3', 'Sân 4', 'Sân 5', 'Sân 6'],
     adminPinHash: string = '',
     categories: Category[] = [],
     contentConfig: ITournamentContentConfig = { ...DEFAULT_CONTENT_CONFIG }
@@ -76,7 +76,10 @@ export class Tournament {
     this.location = location.trim();
     this.startDate = startDate;
     this.endDate = endDate;
-    this.courts = courts.length > 0 ? courts : ['Sân 1', 'Sân 2', 'Sân 3'];
+    this.courts =
+      courts.length > 0
+        ? courts
+        : ['Sân 1', 'Sân 2', 'Sân 3', 'Sân 4', 'Sân 5', 'Sân 6'];
     // Mã PIN mặc định là 123456 (hash SHA-256) nếu chưa được đặt
     this.adminPinHash =
       adminPinHash ||
@@ -142,13 +145,16 @@ export class Tournament {
 
   public static fromJSON(json: ITournamentJSON): Tournament {
     const categories = (json.categories || []).map((c) => Category.fromJSON(c));
+    const defaultCourts = ['Sân 1', 'Sân 2', 'Sân 3', 'Sân 4', 'Sân 5', 'Sân 6'];
+    const courtsList = Array.from(new Set([...(json.courts || []), ...defaultCourts]));
+
     return new Tournament(
       json.id,
       json.name,
       json.location,
       json.startDate,
       json.endDate,
-      json.courts,
+      courtsList,
       json.adminPinHash,
       categories,
       json.contentConfig ? { ...DEFAULT_CONTENT_CONFIG, ...json.contentConfig } : { ...DEFAULT_CONTENT_CONFIG }
@@ -168,7 +174,7 @@ export class Tournament {
       'CLB Cầu Lông Chí Thảo',
       new Date().toISOString().split('T')[0],
       new Date().toISOString().split('T')[0],
-      ['Sân 1', 'Sân 2', 'Sân 3']
+      ['Sân 1', 'Sân 2', 'Sân 3', 'Sân 4', 'Sân 5', 'Sân 6']
     );
 
     // 1. Đôi nam (2 bảng: Bảng A, Bảng B)

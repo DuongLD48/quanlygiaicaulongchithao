@@ -23,7 +23,7 @@ export class KnockoutScheduler {
     categoryId: string,
     categoryCode: string = 'ND',
     rulesConfig: StageRuleConfig,
-    courts: string[] = ['Sân 1', 'Sân 2'],
+    courts: string[] = ['Sân 1', 'Sân 2', 'Sân 3', 'Sân 4', 'Sân 5', 'Sân 6'],
     sfStartTime: string = '14:00',
     finalStartTime: string = '15:30',
     team1A: Team | null = null,
@@ -37,7 +37,7 @@ export class KnockoutScheduler {
     // Trận Chung kết
     const finalMatch = new Match(
       `match_final_${Date.now()}`,
-      `${categoryCode}-CK`,
+      `${categoryCode}-CK-01`,
       categoryId,
       'KNOCKOUT',
       'Chung kết',
@@ -53,7 +53,7 @@ export class KnockoutScheduler {
     // Trận Tranh hạng 3-4
     const thirdPlaceMatch = new Match(
       `match_third_${Date.now()}`,
-      `${categoryCode}-T3`,
+      `${categoryCode}-TH3-01`,
       categoryId,
       'KNOCKOUT',
       'Tranh hạng 3-4',

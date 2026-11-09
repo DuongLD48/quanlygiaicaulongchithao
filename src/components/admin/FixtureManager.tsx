@@ -73,7 +73,7 @@ export const FixtureManager: React.FC<Props> = ({ category }) => {
 
     // Lấy quy tắc cho vòng bảng
     const groupRule = category.rulesConfig.groupStage;
-    const catCode = category.type === 'MEN_DOUBLES' ? 'DN' : category.type === 'WOMEN_DOUBLES' ? 'DNu' : 'DNN';
+    const catCode = category.getShortCode();
 
     const generated = RoundRobinScheduler.generateMatches(activeGroup.teams, {
       categoryId: category.id,
@@ -134,7 +134,7 @@ export const FixtureManager: React.FC<Props> = ({ category }) => {
     if (!teamA || !teamB) return;
 
     const matchNumber = activeGroup.matches.length + 1;
-    const catCode = category.type === 'MEN_DOUBLES' ? 'DN' : category.type === 'WOMEN_DOUBLES' ? 'DNu' : 'DNN';
+    const catCode = category.getShortCode();
     const groupShort = activeGroup.name.replace(/\s+/g, '').replace('Bảng', 'B');
 
     const newMatch = new Match(
@@ -257,7 +257,7 @@ export const FixtureManager: React.FC<Props> = ({ category }) => {
                 <option value="" className="bg-[#0c1524]">-- Chọn Đội A --</option>
                 {activeGroup.teams.map((t) => (
                   <option key={t.id} value={t.id} className="bg-[#0c1524]">
-                    {t.name}
+                    {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
                   </option>
                 ))}
               </select>
@@ -274,7 +274,7 @@ export const FixtureManager: React.FC<Props> = ({ category }) => {
                 <option value="" className="bg-[#0c1524]">-- Chọn Đội B --</option>
                 {activeGroup.teams.map((t) => (
                   <option key={t.id} value={t.id} className="bg-[#0c1524]">
-                    {t.name}
+                    {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
                   </option>
                 ))}
               </select>
@@ -591,7 +591,7 @@ export const FixtureManager: React.FC<Props> = ({ category }) => {
                 <option value="" className="bg-[#0c1524]">-- Chọn Đội A --</option>
                 {activeGroup.teams.map((t) => (
                   <option key={t.id} value={t.id} className="bg-[#0c1524]">
-                    {t.name}
+                    {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
                   </option>
                 ))}
               </select>
@@ -611,7 +611,7 @@ export const FixtureManager: React.FC<Props> = ({ category }) => {
                 <option value="" className="bg-[#0c1524]">-- Chọn Đội B --</option>
                 {activeGroup.teams.map((t) => (
                   <option key={t.id} value={t.id} className="bg-[#0c1524]">
-                    {t.name}
+                    {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
                   </option>
                 ))}
               </select>

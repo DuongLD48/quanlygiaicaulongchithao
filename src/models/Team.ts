@@ -28,6 +28,14 @@ export class Team {
     return 'Chưa xác định';
   }
 
+  public getFullSelectLabel(): string {
+    const athletes =
+      this.players && this.players.length > 0
+        ? this.players.map((p) => p.fullName).filter(Boolean).join(' / ')
+        : '';
+    return athletes ? `${this.name} (${athletes})` : this.name;
+  }
+
   public addPlayer(player: Player): void {
     this.players.push(player);
     if (!this.name) {

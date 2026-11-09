@@ -44,6 +44,19 @@ export class Category {
     this.knockoutMatches = knockoutMatches;
   }
 
+  public getShortCode(): string {
+    if (this.type === 'MEN_DOUBLES') return 'DN';
+    if (this.type === 'WOMEN_DOUBLES') return 'DNu';
+    if (this.type === 'MIXED_DOUBLES') return 'DNN';
+    if (this.type === 'MEN_SINGLES') return 'DON';
+    if (this.type === 'WOMEN_SINGLES') return 'DONu';
+    const norm = (this.name || '').toLowerCase();
+    if (norm.includes('nữ') && !norm.includes('nam')) return 'DNu';
+    if (norm.includes('nam nữ') || norm.includes('nam-nữ') || norm.includes('hỗn hợp')) return 'DNN';
+    if (norm.includes('nam')) return 'DN';
+    return 'ND';
+  }
+
   public addGroup(group: Group): void {
     if (!this.groups.some((g) => g.id === group.id)) {
       this.groups.push(group);
@@ -95,11 +108,21 @@ export class Category {
     }
 
     // 2. Đồng bộ vòng knockout
+    const catCode = this.getShortCode();
     for (const match of this.knockoutMatches) {
       const stageRule = this.rulesConfig.getRuleForStage(match.roundName);
       match.rule = stageRule;
       if (match.status !== 'FINISHED') {
         match.recalculateStatus();
+      }
+
+      // Đảm bảo mã trận vòng trong có tiền tố thể loại (DN-, DNu-, DNN-...)
+      if (match.matchCode && !match.matchCode.startsWith(`${catCode}-`)) {
+        const knownCatPrefixes = ['DN-', 'DNu-', 'DNN-', 'DON-', 'DONu-', 'ND-'];
+        const hasOtherCat = knownCatPrefixes.some((p) => match.matchCode.startsWith(p));
+        if (!hasOtherCat) {
+          match.matchCode = `${catCode}-${match.matchCode}`;
+        }
       }
     }
   }

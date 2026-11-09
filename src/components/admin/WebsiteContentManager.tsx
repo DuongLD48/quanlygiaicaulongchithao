@@ -11,6 +11,9 @@ import {
   BookOpen,
   Award,
   CheckCircle2,
+  MapPin,
+  Plus,
+  Trash2,
 } from 'lucide-react';
 
 export const WebsiteContentManager: React.FC = () => {
@@ -24,6 +27,10 @@ export const WebsiteContentManager: React.FC = () => {
     ...(tournament?.contentConfig || {}),
   });
 
+  const [courts, setCourts] = useState<string[]>(
+    () => tournament?.courts || ['Sân 1', 'Sân 2', 'Sân 3', 'Sân 4', 'Sân 5', 'Sân 6']
+  );
+
   const [savedSuccess, setSavedSuccess] = useState(false);
 
   useEffect(() => {
@@ -32,6 +39,9 @@ export const WebsiteContentManager: React.FC = () => {
         ...DEFAULT_CONTENT_CONFIG,
         ...tournament.contentConfig,
       });
+    }
+    if (tournament?.courts && tournament.courts.length > 0) {
+      setCourts(tournament.courts);
     }
   }, [tournament]);
 
@@ -54,6 +64,7 @@ export const WebsiteContentManager: React.FC = () => {
 
     tournament.contentConfig = { ...form };
     tournament.name = form.tournamentName || tournament.name;
+    tournament.courts = courts.filter((c) => c.trim().length > 0);
 
     await saveTournament(tournament);
     setSavedSuccess(true);
@@ -193,11 +204,70 @@ export const WebsiteContentManager: React.FC = () => {
           </div>
         </div>
 
-        {/* PHẦN 2: NỘI DUNG TRANG THỂ LỆ */}
+        {/* PHẦN 2: DANH SÁCH SÂN THI ĐẤU */}
+        <div className="bg-[#091120] rounded-xl border border-[#16263f] p-4 sm:p-5 space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-[#14233a]">
+            <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wide flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-cyan-400" />
+              2. Danh Sách Sân Thi Đấu ({courts.length} Sân)
+            </h4>
+            <button
+              type="button"
+              onClick={() => {
+                const newNum = courts.length + 1;
+                setCourts([...courts, `Sân ${newNum}`]);
+                setSavedSuccess(false);
+              }}
+              className="px-2.5 py-1 bg-[#0c1524] hover:bg-[#152742] text-cyan-400 border border-cyan-500/40 rounded-lg text-[11px] font-bold flex items-center gap-1 transition cursor-pointer"
+            >
+              <Plus className="w-3 h-3" />
+              Thêm Sân
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5">
+            {courts.map((court, idx) => (
+              <div
+                key={idx}
+                className="flex items-center gap-1 bg-[#0c1524] border border-[#1d3252] rounded-xl p-1.5 focus-within:border-cyan-400"
+              >
+                <input
+                  type="text"
+                  value={court}
+                  onChange={(e) => {
+                    const next = [...courts];
+                    next[idx] = e.target.value;
+                    setCourts(next);
+                    setSavedSuccess(false);
+                  }}
+                  className="w-full bg-transparent px-1.5 py-1 text-xs font-bold text-white focus:outline-none"
+                />
+                {courts.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCourts(courts.filter((_, i) => i !== idx));
+                      setSavedSuccess(false);
+                    }}
+                    className="text-slate-500 hover:text-rose-400 p-1 rounded transition cursor-pointer"
+                    title="Xóa sân này"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+          <span className="text-[10px] text-slate-500 block">
+            Hệ thống tự động sử dụng danh sách các sân này khi xếp trận tự động, thêm trận thủ công hoặc cài vòng trong.
+          </span>
+        </div>
+
+        {/* PHẦN 3: NỘI DUNG TRANG THỂ LỆ */}
         <div className="bg-[#091120] rounded-xl border border-[#16263f] p-4 sm:p-5 space-y-4">
           <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wide flex items-center gap-2 pb-2 border-b border-[#14233a]">
             <BookOpen className="w-4 h-4 text-cyan-400" />
-            2. Nội Dung Trang Thể Lệ & Quy Định Thi Đấu
+            3. Nội Dung Trang Thể Lệ & Quy Định Thi Đấu
           </h4>
 
           <div>
@@ -264,11 +334,11 @@ export const WebsiteContentManager: React.FC = () => {
           </div>
         </div>
 
-        {/* PHẦN 3: TIÊU CHÍ XẾP HẠNG & QUY ĐỊNH ĐI TIẾP */}
+        {/* PHẦN 4: TIÊU CHÍ XẾP HẠNG & QUY ĐỊNH ĐI TIẾP */}
         <div className="bg-[#091120] rounded-xl border border-[#16263f] p-4 sm:p-5 space-y-4">
           <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wide flex items-center gap-2 pb-2 border-b border-[#14233a]">
             <Award className="w-4 h-4 text-amber-400" />
-            3. Tiêu Chí Xếp Hạng Vòng Bảng & Quy Định Đi Tiếp
+            4. Tiêu Chí Xếp Hạng Vòng Bảng & Quy Định Đi Tiếp
           </h4>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

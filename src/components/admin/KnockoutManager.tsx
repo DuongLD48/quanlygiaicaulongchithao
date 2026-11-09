@@ -47,18 +47,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
   ];
 
   // Thêm trận knockout tự do
-  const getCatCode = () => {
-    if (category.type === 'MEN_DOUBLES') return 'DN';
-    if (category.type === 'WOMEN_DOUBLES') return 'DNu';
-    if (category.type === 'MIXED_DOUBLES') return 'DNN';
-    if (category.type === 'MEN_SINGLES') return 'DON';
-    if (category.type === 'WOMEN_SINGLES') return 'DONu';
-    const norm = category.name.toLowerCase();
-    if (norm.includes('nữ') && !norm.includes('nam')) return 'DNu';
-    if (norm.includes('nam nữ')) return 'DNN';
-    if (norm.includes('nam')) return 'DN';
-    return 'ND';
-  };
+  const getCatCode = () => category.getShortCode();
 
   const [isAddingCustomMatch, setIsAddingCustomMatch] = useState(false);
   const [customRoundName, setCustomRoundName] = useState('Bán Kết');
@@ -107,7 +96,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
     const team1B = allCategoryTeams.find((t) => t.id === team1BId) || null;
     const team2A = allCategoryTeams.find((t) => t.id === team2AId) || null;
 
-    const catCode = category.type === 'MEN_DOUBLES' ? 'DN' : category.type === 'WOMEN_DOUBLES' ? 'DNu' : 'DNN';
+    const catCode = getCatCode();
 
     const matches = KnockoutScheduler.createStandard4TeamKnockout(
       category.id,
@@ -269,7 +258,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                   <option value="" className="bg-[#0c1524]">-- Chọn Đội Nhất A --</option>
                   {allCategoryTeams.map((t) => (
                     <option key={t.id} value={t.id} className="bg-[#0c1524]">
-                      {t.name}
+                      {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
                     </option>
                   ))}
                 </select>
@@ -288,7 +277,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                   <option value="" className="bg-[#0c1524]">-- Chọn Đội Nhì B --</option>
                   {allCategoryTeams.map((t) => (
                     <option key={t.id} value={t.id} className="bg-[#0c1524]">
-                      {t.name}
+                      {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
                     </option>
                   ))}
                 </select>
@@ -313,7 +302,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                   <option value="" className="bg-[#0c1524]">-- Chọn Đội Nhất B --</option>
                   {allCategoryTeams.map((t) => (
                     <option key={t.id} value={t.id} className="bg-[#0c1524]">
-                      {t.name}
+                      {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
                     </option>
                   ))}
                 </select>
@@ -332,7 +321,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                   <option value="" className="bg-[#0c1524]">-- Chọn Đội Nhì A --</option>
                   {allCategoryTeams.map((t) => (
                     <option key={t.id} value={t.id} className="bg-[#0c1524]">
-                      {t.name}
+                      {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
                     </option>
                   ))}
                 </select>
@@ -424,7 +413,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                 <option value="" className="bg-[#0c1524]">-- Chọn Đội A (hoặc để trống) --</option>
                 {allCategoryTeams.map((t) => (
                   <option key={t.id} value={t.id} className="bg-[#0c1524]">
-                    {t.name}
+                    {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
                   </option>
                 ))}
               </select>
@@ -440,7 +429,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                 <option value="" className="bg-[#0c1524]">-- Chọn Đội B (hoặc để trống) --</option>
                 {allCategoryTeams.map((t) => (
                   <option key={t.id} value={t.id} className="bg-[#0c1524]">
-                    {t.name}
+                    {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
                   </option>
                 ))}
               </select>
@@ -786,7 +775,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                 <option value="" className="bg-[#0c1524]">-- Chọn Đội A (hoặc để trống) --</option>
                 {allCategoryTeams.map((t) => (
                   <option key={t.id} value={t.id} className="bg-[#0c1524]">
-                    {t.name}
+                    {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
                   </option>
                 ))}
               </select>
@@ -806,7 +795,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                 <option value="" className="bg-[#0c1524]">-- Chọn Đội B (hoặc để trống) --</option>
                 {allCategoryTeams.map((t) => (
                   <option key={t.id} value={t.id} className="bg-[#0c1524]">
-                    {t.name}
+                    {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
                   </option>
                 ))}
               </select>

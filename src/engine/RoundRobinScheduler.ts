@@ -90,7 +90,7 @@ export class RoundRobinScheduler {
     // Cấu hình sân đấu và giờ đấu
     const courts = options.courts && options.courts.length > 0
       ? options.courts
-      : ['Sân 1', 'Sân 2'];
+      : ['Sân 1', 'Sân 2', 'Sân 3', 'Sân 4', 'Sân 5', 'Sân 6'];
     const duration = options.matchDurationMinutes ?? 25;
     const startHour = options.startTime ? parseInt(options.startTime.split(':')[0], 10) : 8;
     const startMinute = options.startTime ? parseInt(options.startTime.split(':')[1], 10) : 0;
