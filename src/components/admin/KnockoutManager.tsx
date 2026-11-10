@@ -52,10 +52,31 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
   const [isAddingCustomMatch, setIsAddingCustomMatch] = useState(false);
   const [customRoundName, setCustomRoundName] = useState('Bán Kết');
   const [customMatchCode, setCustomMatchCode] = useState(() => `${getCatCode()}-BK-01`);
+  const [customPlaceholderA, setCustomPlaceholderA] = useState('');
+  const [customPlaceholderB, setCustomPlaceholderB] = useState('');
   const [customTeamAId, setCustomTeamAId] = useState('');
   const [customTeamBId, setCustomTeamBId] = useState('');
   const [customCourt, setCustomCourt] = useState(tournament?.courts?.[0] || 'Sân 1');
   const [customTime, setCustomTime] = useState('14:00');
+
+  const getPlaceholderSuggestions = () => {
+    const list: string[] = [];
+    category.groups.forEach((g) => {
+      list.push(`Nhất ${g.name}`);
+      list.push(`Nhì ${g.name}`);
+      list.push(`Ba ${g.name}`);
+    });
+    category.knockoutMatches.forEach((m) => {
+      if (m.matchCode) {
+        list.push(`Thắng ${m.matchCode}`);
+        list.push(`Thua ${m.matchCode}`);
+      }
+    });
+    list.push('Thắng Bán Kết 1', 'Thắng Bán Kết 2');
+    list.push('Thua Bán Kết 1', 'Thua Bán Kết 2');
+    list.push('Thắng Tứ Kết 1', 'Thắng Tứ Kết 2', 'Thắng Tứ Kết 3', 'Thắng Tứ Kết 4');
+    return Array.from(new Set(list));
+  };
 
   const handleStageSelectChange = (stageLabel: string) => {
     setCustomRoundName(stageLabel);
@@ -76,6 +97,8 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
       m.roundName.toLowerCase().includes(defaultStage.label.toLowerCase())
     ).length;
     setCustomMatchCode(`${catCode}-${defaultStage.prefix}-${String(countInStage + 1).padStart(2, '0')}`);
+    setCustomPlaceholderA('');
+    setCustomPlaceholderB('');
     setIsAddingCustomMatch(true);
   };
 
@@ -97,6 +120,8 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
     const team2A = allCategoryTeams.find((t) => t.id === team2AId) || null;
 
     const catCode = getCatCode();
+    const groupAName = category.groups[0]?.name || 'Bảng A';
+    const groupBName = category.groups[1]?.name || 'Bảng B';
 
     const matches = KnockoutScheduler.createStandard4TeamKnockout(
       category.id,
@@ -108,7 +133,9 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
       team1A,
       team2B,
       team1B,
-      team2A
+      team2A,
+      groupAName,
+      groupBName
     );
 
     category.knockoutMatches = matches;
@@ -154,7 +181,9 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
       teamA,
       teamB,
       customCourt,
-      customTime
+      customTime,
+      customPlaceholderA.trim() || undefined,
+      customPlaceholderB.trim() || undefined
     );
 
     category.knockoutMatches.push(newMatch);
@@ -248,11 +277,11 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
             {/* Cặp Bán kết 1 */}
             <div className="p-3.5 bg-[#091120] rounded-xl border border-[#16263f] space-y-3">
               <span className="text-xs font-bold text-cyan-300 flex items-center gap-1.5">
-                <Medal className="w-3.5 h-3.5 text-cyan-400" /> Bán Kết 1 (Nhất A vs Nhì B)
+                <Medal className="w-3.5 h-3.5 text-cyan-400" /> Bán Kết 1 (Nhất {category.groups[0]?.name || 'Bảng A'} vs Nhì {category.groups[1]?.name || 'Bảng B'})
               </span>
               <div>
                 <label className="text-[11px] font-semibold text-slate-300 block mb-1">
-                  Đội Nhất Bảng A:
+                  Đội Nhất {category.groups[0]?.name || 'Bảng A'}:
                 </label>
                 <select
                   value={team1AId}
@@ -260,7 +289,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                   className="w-full px-3 py-2 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs font-semibold text-white focus:border-cyan-400 focus:outline-none"
                   required
                 >
-                  <option value="" className="bg-[#0c1524]">-- Chọn Đội Nhất A --</option>
+                  <option value="" className="bg-[#0c1524]">-- Chọn Đội Nhất {category.groups[0]?.name || 'Bảng A'} --</option>
                   {allCategoryTeams.map((t) => (
                     <option key={t.id} value={t.id} className="bg-[#0c1524]">
                       {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
@@ -271,7 +300,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
 
               <div>
                 <label className="text-[11px] font-semibold text-slate-300 block mb-1">
-                  Đội Nhì Bảng B:
+                  Đội Nhì {category.groups[1]?.name || 'Bảng B'}:
                 </label>
                 <select
                   value={team2BId}
@@ -279,7 +308,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                   className="w-full px-3 py-2 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs font-semibold text-white focus:border-cyan-400 focus:outline-none"
                   required
                 >
-                  <option value="" className="bg-[#0c1524]">-- Chọn Đội Nhì B --</option>
+                  <option value="" className="bg-[#0c1524]">-- Chọn Đội Nhì {category.groups[1]?.name || 'Bảng B'} --</option>
                   {allCategoryTeams.map((t) => (
                     <option key={t.id} value={t.id} className="bg-[#0c1524]">
                       {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
@@ -292,11 +321,11 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
             {/* Cặp Bán kết 2 */}
             <div className="p-3.5 bg-[#091120] rounded-xl border border-[#16263f] space-y-3">
               <span className="text-xs font-bold text-cyan-300 flex items-center gap-1.5">
-                <Medal className="w-3.5 h-3.5 text-cyan-400" /> Bán Kết 2 (Nhất B vs Nhì A)
+                <Medal className="w-3.5 h-3.5 text-cyan-400" /> Bán Kết 2 (Nhất {category.groups[1]?.name || 'Bảng B'} vs Nhì {category.groups[0]?.name || 'Bảng A'})
               </span>
               <div>
                 <label className="text-[11px] font-semibold text-slate-300 block mb-1">
-                  Đội Nhất Bảng B:
+                  Đội Nhất {category.groups[1]?.name || 'Bảng B'}:
                 </label>
                 <select
                   value={team1BId}
@@ -304,7 +333,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                   className="w-full px-3 py-2 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs font-semibold text-white focus:border-cyan-400 focus:outline-none"
                   required
                 >
-                  <option value="" className="bg-[#0c1524]">-- Chọn Đội Nhất B --</option>
+                  <option value="" className="bg-[#0c1524]">-- Chọn Đội Nhất {category.groups[1]?.name || 'Bảng B'} --</option>
                   {allCategoryTeams.map((t) => (
                     <option key={t.id} value={t.id} className="bg-[#0c1524]">
                       {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
@@ -315,7 +344,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
 
               <div>
                 <label className="text-[11px] font-semibold text-slate-300 block mb-1">
-                  Đội Nhì Bảng A:
+                  Đội Nhì {category.groups[0]?.name || 'Bảng A'}:
                 </label>
                 <select
                   value={team2AId}
@@ -323,7 +352,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                   className="w-full px-3 py-2 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs font-semibold text-white focus:border-cyan-400 focus:outline-none"
                   required
                 >
-                  <option value="" className="bg-[#0c1524]">-- Chọn Đội Nhì A --</option>
+                  <option value="" className="bg-[#0c1524]">-- Chọn Đội Nhì {category.groups[0]?.name || 'Bảng A'} --</option>
                   {allCategoryTeams.map((t) => (
                     <option key={t.id} value={t.id} className="bg-[#0c1524]">
                       {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
@@ -404,40 +433,9 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                 value={customMatchCode}
                 onChange={(e) => setCustomMatchCode(e.target.value)}
                 className="w-full px-3 py-2 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs font-mono font-bold text-white focus:border-cyan-400 focus:outline-none"
+                placeholder="VD: DN-BK-01..."
                 required
               />
-            </div>
-
-            <div>
-              <label className="text-[11px] font-semibold text-slate-300 block mb-1">Đội 1 (A)</label>
-              <select
-                value={customTeamAId}
-                onChange={(e) => setCustomTeamAId(e.target.value)}
-                className="w-full px-3 py-2 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
-              >
-                <option value="" className="bg-[#0c1524]">-- Chọn Đội A (hoặc để trống) --</option>
-                {allCategoryTeams.map((t) => (
-                  <option key={t.id} value={t.id} className="bg-[#0c1524]">
-                    {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="text-[11px] font-semibold text-slate-300 block mb-1">Đội 2 (B)</label>
-              <select
-                value={customTeamBId}
-                onChange={(e) => setCustomTeamBId(e.target.value)}
-                className="w-full px-3 py-2 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
-              >
-                <option value="" className="bg-[#0c1524]">-- Chọn Đội B (hoặc để trống) --</option>
-                {allCategoryTeams.map((t) => (
-                  <option key={t.id} value={t.id} className="bg-[#0c1524]">
-                    {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
-                  </option>
-                ))}
-              </select>
             </div>
 
             <div>
@@ -464,6 +462,123 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                 onChange={(e) => setCustomTime(e.target.value)}
                 className="w-full px-3 py-1.5 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs font-mono text-white focus:border-cyan-400 focus:outline-none"
               />
+            </div>
+          </div>
+
+          {/* Thiết lập Đội 1 (A) & Đội 2 (B) với Placeholder */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+            {/* Đội A */}
+            <div className="p-3 bg-[#091120] rounded-xl border border-[#16263f] space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-cyan-300">Đội 1 (A)</label>
+                <span className="text-[10px] text-slate-400">Placeholder / Vị trí</span>
+              </div>
+              <input
+                type="text"
+                list="knockout-placeholder-suggestions"
+                value={customPlaceholderA}
+                onChange={(e) => setCustomPlaceholderA(e.target.value)}
+                placeholder="VD: Nhất Bảng A, Thắng TK-01..."
+                className="w-full px-3 py-1.5 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
+              />
+              <div className="flex flex-wrap gap-1">
+                {category.groups.map((g) => (
+                  <button
+                    key={`custom-a-nhat-${g.id}`}
+                    type="button"
+                    onClick={() => setCustomPlaceholderA(`Nhất ${g.name}`)}
+                    className="px-1.5 py-0.5 text-[10px] bg-[#101e33] hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 rounded border border-[#1f3554] transition"
+                  >
+                    + Nhất {g.name}
+                  </button>
+                ))}
+                {category.groups.map((g) => (
+                  <button
+                    key={`custom-a-nhi-${g.id}`}
+                    type="button"
+                    onClick={() => setCustomPlaceholderA(`Nhì ${g.name}`)}
+                    className="px-1.5 py-0.5 text-[10px] bg-[#101e33] hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 rounded border border-[#1f3554] transition"
+                  >
+                    + Nhì {g.name}
+                  </button>
+                ))}
+              </div>
+              <div>
+                <label className="text-[11px] font-semibold text-slate-300 block mb-1">
+                  Chọn đội cụ thể (nếu đã có):
+                </label>
+                <select
+                  value={customTeamAId}
+                  onChange={(e) => setCustomTeamAId(e.target.value)}
+                  className="w-full px-3 py-2 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
+                >
+                  <option value="" className="bg-[#0c1524]">
+                    -- {customPlaceholderA ? `Chưa có đội (sẽ hiển thị "${customPlaceholderA}")` : 'Chưa có đội (để trống)'} --
+                  </option>
+                  {allCategoryTeams.map((t) => (
+                    <option key={t.id} value={t.id} className="bg-[#0c1524]">
+                      {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Đội B */}
+            <div className="p-3 bg-[#091120] rounded-xl border border-[#16263f] space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-cyan-300">Đội 2 (B)</label>
+                <span className="text-[10px] text-slate-400">Placeholder / Vị trí</span>
+              </div>
+              <input
+                type="text"
+                list="knockout-placeholder-suggestions"
+                value={customPlaceholderB}
+                onChange={(e) => setCustomPlaceholderB(e.target.value)}
+                placeholder="VD: Nhì Bảng B, Thắng TK-02..."
+                className="w-full px-3 py-1.5 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
+              />
+              <div className="flex flex-wrap gap-1">
+                {category.groups.map((g) => (
+                  <button
+                    key={`custom-b-nhat-${g.id}`}
+                    type="button"
+                    onClick={() => setCustomPlaceholderB(`Nhất ${g.name}`)}
+                    className="px-1.5 py-0.5 text-[10px] bg-[#101e33] hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 rounded border border-[#1f3554] transition"
+                  >
+                    + Nhất {g.name}
+                  </button>
+                ))}
+                {category.groups.map((g) => (
+                  <button
+                    key={`custom-b-nhi-${g.id}`}
+                    type="button"
+                    onClick={() => setCustomPlaceholderB(`Nhì ${g.name}`)}
+                    className="px-1.5 py-0.5 text-[10px] bg-[#101e33] hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 rounded border border-[#1f3554] transition"
+                  >
+                    + Nhì {g.name}
+                  </button>
+                ))}
+              </div>
+              <div>
+                <label className="text-[11px] font-semibold text-slate-300 block mb-1">
+                  Chọn đội cụ thể (nếu đã có):
+                </label>
+                <select
+                  value={customTeamBId}
+                  onChange={(e) => setCustomTeamBId(e.target.value)}
+                  className="w-full px-3 py-2 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
+                >
+                  <option value="" className="bg-[#0c1524]">
+                    -- {customPlaceholderB ? `Chưa có đội (sẽ hiển thị "${customPlaceholderB}")` : 'Chưa có đội (để trống)'} --
+                  </option>
+                  {allCategoryTeams.map((t) => (
+                    <option key={t.id} value={t.id} className="bg-[#0c1524]">
+                      {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 
@@ -576,12 +691,27 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                             teamAWon ? 'font-black text-white' : 'font-semibold text-slate-300'
                           }`}
                         >
-                          {match.teamA?.getDisplayName() || 'Chờ xác định'}
+                          {match.teamA?.getDisplayName() || (
+                            <span className="text-cyan-400 font-semibold italic">
+                              {match.placeholderA || 'Chờ xác định'}
+                            </span>
+                          )}
                         </div>
-                        {match.teamA?.players && match.teamA.players.length > 0 && (
-                          <div className="text-[10px] text-slate-500 truncate">
-                            {match.teamA.players.map((p) => p.fullName).join(' • ')}
+                        {match.teamA?.players && match.teamA.players.length > 0 ? (
+                          <div className="text-[10px] text-slate-500 truncate flex items-center gap-1.5">
+                            <span>{match.teamA.players.map((p) => p.fullName).join(' • ')}</span>
+                            {match.placeholderA && (
+                              <span className="text-[9px] px-1 rounded bg-[#101e33] text-cyan-300 border border-cyan-800/40 shrink-0 font-medium">
+                                {match.placeholderA}
+                              </span>
+                            )}
                           </div>
+                        ) : (
+                          !match.teamA && match.placeholderA && (
+                            <div className="text-[10px] text-slate-500 italic truncate">
+                              Vị trí: {match.placeholderA}
+                            </div>
+                          )
                         )}
                       </div>
                     </div>
@@ -616,12 +746,27 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                             teamBWon ? 'font-black text-white' : 'font-semibold text-slate-300'
                           }`}
                         >
-                          {match.teamB?.getDisplayName() || 'Chờ xác định'}
+                          {match.teamB?.getDisplayName() || (
+                            <span className="text-cyan-400 font-semibold italic">
+                              {match.placeholderB || 'Chờ xác định'}
+                            </span>
+                          )}
                         </div>
-                        {match.teamB?.players && match.teamB.players.length > 0 && (
-                          <div className="text-[10px] text-slate-500 truncate">
-                            {match.teamB.players.map((p) => p.fullName).join(' • ')}
+                        {match.teamB?.players && match.teamB.players.length > 0 ? (
+                          <div className="text-[10px] text-slate-500 truncate flex items-center gap-1.5">
+                            <span>{match.teamB.players.map((p) => p.fullName).join(' • ')}</span>
+                            {match.placeholderB && (
+                              <span className="text-[9px] px-1 rounded bg-[#101e33] text-cyan-300 border border-cyan-800/40 shrink-0 font-medium">
+                                {match.placeholderB}
+                              </span>
+                            )}
                           </div>
+                        ) : (
+                          !match.teamB && match.placeholderB && (
+                            <div className="text-[10px] text-slate-500 italic truncate">
+                              Vị trí: {match.placeholderB}
+                            </div>
+                          )
                         )}
                       </div>
                     </div>
@@ -714,7 +859,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
           <form
             onSubmit={handleSaveEditMatch}
-            className="bg-[#0c1524] rounded-3xl p-5 max-w-md w-full border border-[#16263f] shadow-2xl space-y-4 text-slate-100"
+            className="bg-[#0c1524] rounded-3xl p-5 max-w-lg w-full border border-[#16263f] shadow-2xl space-y-4 text-slate-100 max-h-[90vh] overflow-y-auto scrollbar-thin"
           >
             <div className="flex items-center justify-between pb-2 border-b border-[#16263f]">
               <h4 className="font-bold text-sm text-white">
@@ -782,44 +927,144 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
               })()}
             </div>
 
-            <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">Đội 1 (A)</label>
-              <select
-                value={editingMatch.teamA?.id || ''}
+            {/* Thiết lập Đội 1 (A) */}
+            <div className="p-3 bg-[#091120] rounded-2xl border border-[#16263f] space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-cyan-300">Đội 1 (A)</label>
+                <span className="text-[10px] text-slate-400">Placeholder / Vị trí</span>
+              </div>
+              <input
+                type="text"
+                list="knockout-placeholder-suggestions"
+                value={editingMatch.placeholderA || ''}
                 onChange={(e) => {
-                  const t = allCategoryTeams.find((x) => x.id === e.target.value);
-                  editingMatch.teamA = t || null;
+                  editingMatch.placeholderA = e.target.value;
                   setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
                 }}
-                className="w-full px-3 py-2 bg-[#070d19] border border-[#1d3252] rounded-xl text-xs font-semibold text-white focus:border-cyan-400 focus:outline-none"
-              >
-                <option value="" className="bg-[#0c1524]">-- Chọn Đội A (hoặc để trống) --</option>
-                {allCategoryTeams.map((t) => (
-                  <option key={t.id} value={t.id} className="bg-[#0c1524]">
-                    {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
-                  </option>
+                placeholder="VD: Nhất Bảng A, Thắng TK-01..."
+                className="w-full px-3 py-1.5 bg-[#070d19] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
+              />
+              <div className="flex flex-wrap gap-1">
+                {category.groups.map((g) => (
+                  <button
+                    key={`edit-a-nhat-${g.id}`}
+                    type="button"
+                    onClick={() => {
+                      editingMatch.placeholderA = `Nhất ${g.name}`;
+                      setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
+                    }}
+                    className="px-1.5 py-0.5 text-[10px] bg-[#101e33] hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 rounded border border-[#1f3554] transition"
+                  >
+                    + Nhất {g.name}
+                  </button>
                 ))}
-              </select>
+                {category.groups.map((g) => (
+                  <button
+                    key={`edit-a-nhi-${g.id}`}
+                    type="button"
+                    onClick={() => {
+                      editingMatch.placeholderA = `Nhì ${g.name}`;
+                      setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
+                    }}
+                    className="px-1.5 py-0.5 text-[10px] bg-[#101e33] hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 rounded border border-[#1f3554] transition"
+                  >
+                    + Nhì {g.name}
+                  </button>
+                ))}
+              </div>
+              <div>
+                <label className="text-[11px] font-semibold text-slate-300 block mb-1">
+                  Đội thực tế (A):
+                </label>
+                <select
+                  value={editingMatch.teamA?.id || ''}
+                  onChange={(e) => {
+                    const t = allCategoryTeams.find((x) => x.id === e.target.value);
+                    editingMatch.teamA = t || null;
+                    setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
+                  }}
+                  className="w-full px-3 py-2 bg-[#070d19] border border-[#1d3252] rounded-xl text-xs font-semibold text-white focus:border-cyan-400 focus:outline-none"
+                >
+                  <option value="" className="bg-[#0c1524]">
+                    -- {editingMatch.placeholderA ? `Chưa có (sẽ hiện: "${editingMatch.placeholderA}")` : 'Chưa có đội (để trống)'} --
+                  </option>
+                  {allCategoryTeams.map((t) => (
+                    <option key={t.id} value={t.id} className="bg-[#0c1524]">
+                      {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
-            <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">Đội 2 (B)</label>
-              <select
-                value={editingMatch.teamB?.id || ''}
+            {/* Thiết lập Đội 2 (B) */}
+            <div className="p-3 bg-[#091120] rounded-2xl border border-[#16263f] space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-cyan-300">Đội 2 (B)</label>
+                <span className="text-[10px] text-slate-400">Placeholder / Vị trí</span>
+              </div>
+              <input
+                type="text"
+                list="knockout-placeholder-suggestions"
+                value={editingMatch.placeholderB || ''}
                 onChange={(e) => {
-                  const t = allCategoryTeams.find((x) => x.id === e.target.value);
-                  editingMatch.teamB = t || null;
+                  editingMatch.placeholderB = e.target.value;
                   setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
                 }}
-                className="w-full px-3 py-2 bg-[#070d19] border border-[#1d3252] rounded-xl text-xs font-semibold text-white focus:border-cyan-400 focus:outline-none"
-              >
-                <option value="" className="bg-[#0c1524]">-- Chọn Đội B (hoặc để trống) --</option>
-                {allCategoryTeams.map((t) => (
-                  <option key={t.id} value={t.id} className="bg-[#0c1524]">
-                    {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
-                  </option>
+                placeholder="VD: Nhì Bảng B, Thắng TK-02..."
+                className="w-full px-3 py-1.5 bg-[#070d19] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
+              />
+              <div className="flex flex-wrap gap-1">
+                {category.groups.map((g) => (
+                  <button
+                    key={`edit-b-nhat-${g.id}`}
+                    type="button"
+                    onClick={() => {
+                      editingMatch.placeholderB = `Nhất ${g.name}`;
+                      setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
+                    }}
+                    className="px-1.5 py-0.5 text-[10px] bg-[#101e33] hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 rounded border border-[#1f3554] transition"
+                  >
+                    + Nhất {g.name}
+                  </button>
                 ))}
-              </select>
+                {category.groups.map((g) => (
+                  <button
+                    key={`edit-b-nhi-${g.id}`}
+                    type="button"
+                    onClick={() => {
+                      editingMatch.placeholderB = `Nhì ${g.name}`;
+                      setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
+                    }}
+                    className="px-1.5 py-0.5 text-[10px] bg-[#101e33] hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 rounded border border-[#1f3554] transition"
+                  >
+                    + Nhì {g.name}
+                  </button>
+                ))}
+              </div>
+              <div>
+                <label className="text-[11px] font-semibold text-slate-300 block mb-1">
+                  Đội thực tế (B):
+                </label>
+                <select
+                  value={editingMatch.teamB?.id || ''}
+                  onChange={(e) => {
+                    const t = allCategoryTeams.find((x) => x.id === e.target.value);
+                    editingMatch.teamB = t || null;
+                    setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
+                  }}
+                  className="w-full px-3 py-2 bg-[#070d19] border border-[#1d3252] rounded-xl text-xs font-semibold text-white focus:border-cyan-400 focus:outline-none"
+                >
+                  <option value="" className="bg-[#0c1524]">
+                    -- {editingMatch.placeholderB ? `Chưa có (sẽ hiện: "${editingMatch.placeholderB}")` : 'Chưa có đội (để trống)'} --
+                  </option>
+                  {allCategoryTeams.map((t) => (
+                    <option key={t.id} value={t.id} className="bg-[#0c1524]">
+                      {t.getFullSelectLabel ? t.getFullSelectLabel() : t.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -886,6 +1131,13 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
           onSave={handleSaveScore}
         />
       )}
+
+      {/* Datalist gợi ý placeholder vòng trong */}
+      <datalist id="knockout-placeholder-suggestions">
+        {getPlaceholderSuggestions().map((s) => (
+          <option key={s} value={s} />
+        ))}
+      </datalist>
 
       {/* Datalist 24h presets */}
       <datalist id="time-presets-24h">

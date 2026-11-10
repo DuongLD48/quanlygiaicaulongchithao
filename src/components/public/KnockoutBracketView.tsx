@@ -112,8 +112,10 @@ export const KnockoutBracketView: React.FC<Props> = ({ category }) => {
     const teamAWon = match.winnerId === match.teamA?.id;
     const teamBWon = match.winnerId === match.teamB?.id;
 
-    const teamAName = match.teamA?.name || 'Đội 1';
-    const teamBName = match.teamB?.name || 'Đội 2';
+    const hasTeamA = !!match.teamA;
+    const hasTeamB = !!match.teamB;
+    const teamAName = match.teamA?.name || match.placeholderA || 'Chờ xác định';
+    const teamBName = match.teamB?.name || match.placeholderB || 'Chờ xác định';
     const athletesA = match.teamA?.players?.map((p) => p.fullName).join(' / ') || '';
     const athletesB = match.teamB?.players?.map((p) => p.fullName).join(' / ') || '';
 
@@ -190,15 +192,28 @@ export const KnockoutBracketView: React.FC<Props> = ({ category }) => {
                 <div className="min-w-0 flex-1">
                   <span
                     className={`text-xs block truncate ${
-                      teamAWon ? 'font-black text-white' : 'font-semibold text-slate-300'
+                      hasTeamA
+                        ? teamAWon ? 'font-black text-white' : 'font-semibold text-slate-300'
+                        : 'text-cyan-400 font-semibold italic'
                     }`}
                   >
                     {teamAName}
                   </span>
-                  {athletesA && (
-                    <span className="text-[10px] text-slate-400 truncate block">
-                      {athletesA}
-                    </span>
+                  {athletesA ? (
+                    <div className="flex items-center gap-1.5 truncate">
+                      <span className="text-[10px] text-slate-400 truncate block">{athletesA}</span>
+                      {match.placeholderA && (
+                        <span className="text-[9px] px-1 rounded bg-[#101e33] text-cyan-300 border border-cyan-800/40 shrink-0 font-medium">
+                          {match.placeholderA}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    !hasTeamA && match.placeholderA && (
+                      <span className="text-[10px] text-slate-500 italic block">
+                        Vị trí: {match.placeholderA}
+                      </span>
+                    )
                   )}
                 </div>
               </div>
@@ -241,15 +256,28 @@ export const KnockoutBracketView: React.FC<Props> = ({ category }) => {
                 <div className="min-w-0 flex-1">
                   <span
                     className={`text-xs block truncate ${
-                      teamBWon ? 'font-black text-white' : 'font-semibold text-slate-300'
+                      hasTeamB
+                        ? teamBWon ? 'font-black text-white' : 'font-semibold text-slate-300'
+                        : 'text-cyan-400 font-semibold italic'
                     }`}
                   >
                     {teamBName}
                   </span>
-                  {athletesB && (
-                    <span className="text-[10px] text-slate-400 truncate block">
-                      {athletesB}
-                    </span>
+                  {athletesB ? (
+                    <div className="flex items-center gap-1.5 truncate">
+                      <span className="text-[10px] text-slate-400 truncate block">{athletesB}</span>
+                      {match.placeholderB && (
+                        <span className="text-[9px] px-1 rounded bg-[#101e33] text-cyan-300 border border-cyan-800/40 shrink-0 font-medium">
+                          {match.placeholderB}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    !hasTeamB && match.placeholderB && (
+                      <span className="text-[10px] text-slate-500 italic block">
+                        Vị trí: {match.placeholderB}
+                      </span>
+                    )
                   )}
                 </div>
               </div>

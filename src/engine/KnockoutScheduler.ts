@@ -29,7 +29,9 @@ export class KnockoutScheduler {
     team1A: Team | null = null,
     team2B: Team | null = null,
     team1B: Team | null = null,
-    team2A: Team | null = null
+    team2A: Team | null = null,
+    groupAName: string = 'Bảng A',
+    groupBName: string = 'Bảng B'
   ): Match[] {
     const court1 = courts[0] || 'Sân 1';
     const court2 = courts[1] || court1;
@@ -47,7 +49,13 @@ export class KnockoutScheduler {
       null,
       rulesConfig.finals,
       [{ teamA: 0, teamB: 0 }],
-      'PENDING'
+      'PENDING',
+      null,
+      undefined,
+      undefined,
+      undefined,
+      'Thắng Bán Kết 1',
+      'Thắng Bán Kết 2'
     );
 
     // Trận Tranh hạng 3-4
@@ -63,7 +71,13 @@ export class KnockoutScheduler {
       null,
       rulesConfig.thirdPlace,
       [{ teamA: 0, teamB: 0 }],
-      'PENDING'
+      'PENDING',
+      null,
+      undefined,
+      undefined,
+      undefined,
+      'Thua Bán Kết 1',
+      'Thua Bán Kết 2'
     );
 
     // Bán kết 1: Nhất A vs Nhì B
@@ -72,7 +86,7 @@ export class KnockoutScheduler {
       `${categoryCode}-BK-01`,
       categoryId,
       'KNOCKOUT',
-      'Bán kết 1 (Nhất A - Nhì B)',
+      `Bán kết 1 (Nhất ${groupAName} - Nhì ${groupBName})`,
       court1,
       sfStartTime,
       team1A,
@@ -83,7 +97,9 @@ export class KnockoutScheduler {
       null,
       undefined,
       undefined,
-      finalMatch.id // Đội thắng vào Chung kết
+      finalMatch.id, // Đội thắng vào Chung kết
+      `Nhất ${groupAName}`,
+      `Nhì ${groupBName}`
     );
 
     // Bán kết 2: Nhất B vs Nhì A
@@ -92,7 +108,7 @@ export class KnockoutScheduler {
       `${categoryCode}-BK-02`,
       categoryId,
       'KNOCKOUT',
-      'Bán kết 2 (Nhất B - Nhì A)',
+      `Bán kết 2 (Nhất ${groupBName} - Nhì ${groupAName})`,
       court2,
       sfStartTime,
       team1B,
@@ -103,7 +119,9 @@ export class KnockoutScheduler {
       null,
       undefined,
       undefined,
-      finalMatch.id // Đội thắng vào Chung kết
+      finalMatch.id, // Đội thắng vào Chung kết
+      `Nhất ${groupBName}`,
+      `Nhì ${groupAName}`
     );
 
     return [sf1Match, sf2Match, thirdPlaceMatch, finalMatch];
@@ -148,7 +166,9 @@ export class KnockoutScheduler {
     teamA: Team | null,
     teamB: Team | null,
     court: string = 'Sân 1',
-    scheduledTime: string = '14:00'
+    scheduledTime: string = '14:00',
+    placeholderA?: string,
+    placeholderB?: string
   ): Match {
     return new Match(
       `match_ko_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
@@ -162,7 +182,13 @@ export class KnockoutScheduler {
       teamB,
       rule,
       [{ teamA: 0, teamB: 0 }],
-      'PENDING'
+      'PENDING',
+      null,
+      undefined,
+      undefined,
+      undefined,
+      placeholderA,
+      placeholderB
     );
   }
 }

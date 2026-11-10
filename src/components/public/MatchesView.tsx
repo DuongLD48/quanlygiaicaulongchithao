@@ -191,12 +191,27 @@ export const MatchesView: React.FC<Props> = ({ category, searchQuery = '' }) => 
                       {teamAWon && <Trophy className="w-3.5 h-3.5 text-amber-400 shrink-0" />}
                       <div className="min-w-0">
                         <div className={`text-xs truncate ${teamAWon ? 'font-black text-white' : 'font-semibold text-slate-300'}`}>
-                          {match.teamA?.getDisplayName() || 'Chờ xác định'}
+                          {match.teamA?.getDisplayName() || (
+                            <span className="text-cyan-400 font-semibold italic">
+                              {match.placeholderA || 'Chờ xác định'}
+                            </span>
+                          )}
                         </div>
-                        {match.teamA?.players && match.teamA.players.length > 0 && (
-                          <div className="text-[10px] text-slate-500 truncate">
-                            {match.teamA.players.map((p) => p.fullName).join(' • ')}
+                        {match.teamA?.players && match.teamA.players.length > 0 ? (
+                          <div className="text-[10px] text-slate-500 truncate flex items-center gap-1.5">
+                            <span>{match.teamA.players.map((p) => p.fullName).join(' • ')}</span>
+                            {match.placeholderA && (
+                              <span className="text-[9px] px-1 rounded bg-[#101e33] text-cyan-300 border border-cyan-800/40 shrink-0 font-medium">
+                                {match.placeholderA}
+                              </span>
+                            )}
                           </div>
+                        ) : (
+                          !match.teamA && match.placeholderA && (
+                            <div className="text-[10px] text-slate-500 italic truncate">
+                              Vị trí: {match.placeholderA}
+                            </div>
+                          )
                         )}
                       </div>
                     </div>
@@ -225,12 +240,27 @@ export const MatchesView: React.FC<Props> = ({ category, searchQuery = '' }) => 
                       {teamBWon && <Trophy className="w-3.5 h-3.5 text-amber-400 shrink-0" />}
                       <div className="min-w-0">
                         <div className={`text-xs truncate ${teamBWon ? 'font-black text-white' : 'font-semibold text-slate-300'}`}>
-                          {match.teamB?.getDisplayName() || 'Chờ xác định'}
+                          {match.teamB?.getDisplayName() || (
+                            <span className="text-cyan-400 font-semibold italic">
+                              {match.placeholderB || 'Chờ xác định'}
+                            </span>
+                          )}
                         </div>
-                        {match.teamB?.players && match.teamB.players.length > 0 && (
-                          <div className="text-[10px] text-slate-500 truncate">
-                            {match.teamB.players.map((p) => p.fullName).join(' • ')}
+                        {match.teamB?.players && match.teamB.players.length > 0 ? (
+                          <div className="text-[10px] text-slate-500 truncate flex items-center gap-1.5">
+                            <span>{match.teamB.players.map((p) => p.fullName).join(' • ')}</span>
+                            {match.placeholderB && (
+                              <span className="text-[9px] px-1 rounded bg-[#101e33] text-cyan-300 border border-cyan-800/40 shrink-0 font-medium">
+                                {match.placeholderB}
+                              </span>
+                            )}
                           </div>
+                        ) : (
+                          !match.teamB && match.placeholderB && (
+                            <div className="text-[10px] text-slate-500 italic truncate">
+                              Vị trí: {match.placeholderB}
+                            </div>
+                          )
                         )}
                       </div>
                     </div>

@@ -164,7 +164,7 @@ export const ScoreModal: React.FC<Props> = ({ match, isOpen, onClose, onSave }) 
             >
               <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Đội 1 (A)</div>
               <div className="font-black text-cyan-300 text-xs sm:text-sm mt-0.5 truncate">
-                {workingMatch.teamA?.name || 'Đội A'}
+                {workingMatch.teamA?.name || workingMatch.placeholderA || 'Đội A'}
               </div>
               {workingMatch.teamA?.players && workingMatch.teamA.players.length > 0 && (
                 <div className="text-[11px] text-slate-300 font-medium mt-0.5 truncate">
@@ -188,7 +188,7 @@ export const ScoreModal: React.FC<Props> = ({ match, isOpen, onClose, onSave }) 
             >
               <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Đội 2 (B)</div>
               <div className="font-black text-cyan-300 text-xs sm:text-sm mt-0.5 truncate">
-                {workingMatch.teamB?.name || 'Đội B'}
+                {workingMatch.teamB?.name || workingMatch.placeholderB || 'Đội B'}
               </div>
               {workingMatch.teamB?.players && workingMatch.teamB.players.length > 0 && (
                 <div className="text-[11px] text-slate-300 font-medium mt-0.5 truncate">

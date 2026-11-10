@@ -14,6 +14,8 @@ export interface IMatchJSON {
   scheduledTime: string;
   teamA?: ITeamJSON | null;
   teamB?: ITeamJSON | null;
+  placeholderA?: string; // Tên vị trí hoặc gợi ý khi chưa xác định (VD: "Nhất Bảng A")
+  placeholderB?: string; // Tên vị trí hoặc gợi ý khi chưa xác định (VD: "Nhì Bảng B")
   rule: IMatchRuleJSON;
   scores: ISetScore[];
   status: MatchStatus;
@@ -33,6 +35,8 @@ export class Match {
   public scheduledTime: string;
   public teamA: Team | null;
   public teamB: Team | null;
+  public placeholderA?: string;
+  public placeholderB?: string;
   public rule: MatchRule;
   public scores: ISetScore[];
   public status: MatchStatus;
@@ -57,7 +61,9 @@ export class Match {
     winnerId: string | null = null,
     groupId?: string,
     groupName?: string,
-    nextMatchId?: string
+    nextMatchId?: string,
+    placeholderA?: string,
+    placeholderB?: string
   ) {
     this.id = id || `match_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
     this.matchCode = matchCode;
@@ -68,6 +74,8 @@ export class Match {
     this.scheduledTime = scheduledTime;
     this.teamA = teamA;
     this.teamB = teamB;
+    this.placeholderA = placeholderA;
+    this.placeholderB = placeholderB;
     this.rule = rule;
     this.scores = scores.length > 0 ? scores : [{ teamA: 0, teamB: 0 }];
     this.status = status;
@@ -118,6 +126,9 @@ export class Match {
     const temp = this.teamA;
     this.teamA = this.teamB;
     this.teamB = temp;
+    const tempP = this.placeholderA;
+    this.placeholderA = this.placeholderB;
+    this.placeholderB = tempP;
     this.scores = this.scores.map((s) => ({ teamA: s.teamB, teamB: s.teamA }));
     this.recalculateStatus();
   }
@@ -151,6 +162,8 @@ export class Match {
     if (this.groupId !== undefined && this.groupId !== null) json.groupId = this.groupId;
     if (this.groupName !== undefined && this.groupName !== null) json.groupName = this.groupName;
     if (this.nextMatchId !== undefined && this.nextMatchId !== null) json.nextMatchId = this.nextMatchId;
+    if (this.placeholderA !== undefined && this.placeholderA !== null) json.placeholderA = this.placeholderA;
+    if (this.placeholderB !== undefined && this.placeholderB !== null) json.placeholderB = this.placeholderB;
     return json;
   }
 
@@ -175,7 +188,9 @@ export class Match {
       json.winnerId ?? null,
       json.groupId,
       json.groupName,
-      json.nextMatchId
+      json.nextMatchId,
+      json.placeholderA,
+      json.placeholderB
     );
   }
 }
