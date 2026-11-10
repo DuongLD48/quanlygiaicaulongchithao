@@ -25,6 +25,25 @@ export const KnockoutBracketView: React.FC<Props> = ({ category }) => {
 
   const allCategoryTeams = category.getAllTeams();
 
+  const getPlaceholderSuggestions = () => {
+    const list: string[] = [];
+    category.groups.forEach((g) => {
+      list.push(`Nhất ${g.name}`);
+      list.push(`Nhì ${g.name}`);
+      list.push(`Ba ${g.name}`);
+    });
+    category.knockoutMatches.forEach((m) => {
+      if (m.matchCode) {
+        list.push(`Thắng ${m.matchCode}`);
+        list.push(`Thua ${m.matchCode}`);
+      }
+    });
+    list.push('Thắng Bán Kết 1', 'Thắng Bán Kết 2');
+    list.push('Thua Bán Kết 1', 'Thua Bán Kết 2');
+    list.push('Thắng Tứ Kết 1', 'Thắng Tứ Kết 2', 'Thắng Tứ Kết 3', 'Thắng Tứ Kết 4');
+    return Array.from(new Set(list));
+  };
+
   const knockoutStages = [
     { key: 'roundOf16', label: 'Vòng 1/8', prefix: 'V18', rule: category.rulesConfig.roundOf16 },
     { key: 'quarterFinals', label: 'Tứ Kết', prefix: 'TK', rule: category.rulesConfig.quarterFinals },
@@ -684,43 +703,36 @@ export const KnockoutBracketView: React.FC<Props> = ({ category }) => {
                 <label className="text-xs font-bold text-cyan-300">Đội 1 (A)</label>
                 <span className="text-[10px] text-slate-400">Placeholder / Vị trí</span>
               </div>
-              <input
-                type="text"
-                value={editingMatch.placeholderA || ''}
-                onChange={(e) => {
-                  editingMatch.placeholderA = e.target.value;
-                  setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
-                }}
-                placeholder="VD: Nhất Bảng A, Thắng TK-01..."
-                className="w-full px-3 py-1.5 bg-[#070d19] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
-              />
-              <div className="flex flex-wrap gap-1">
-                {category.groups.map((g) => (
-                  <button
-                    key={`bracket-edit-a-nhat-${g.id}`}
-                    type="button"
-                    onClick={() => {
-                      editingMatch.placeholderA = `Nhất ${g.name}`;
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  list="knockout-placeholder-suggestions"
+                  value={editingMatch.placeholderA || ''}
+                  onChange={(e) => {
+                    editingMatch.placeholderA = e.target.value;
+                    setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
+                  }}
+                  placeholder="VD: Nhất Bảng A, Thắng TK-01..."
+                  className="flex-1 px-3 py-1.5 bg-[#070d19] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
+                />
+                <select
+                  value=""
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      editingMatch.placeholderA = e.target.value;
                       setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
-                    }}
-                    className="px-1.5 py-0.5 text-[10px] bg-[#101e33] hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 rounded border border-[#1f3554] transition cursor-pointer"
-                  >
-                    + Nhất {g.name}
-                  </button>
-                ))}
-                {category.groups.map((g) => (
-                  <button
-                    key={`bracket-edit-a-nhi-${g.id}`}
-                    type="button"
-                    onClick={() => {
-                      editingMatch.placeholderA = `Nhì ${g.name}`;
-                      setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
-                    }}
-                    className="px-1.5 py-0.5 text-[10px] bg-[#101e33] hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 rounded border border-[#1f3554] transition cursor-pointer"
-                  >
-                    + Nhì {g.name}
-                  </button>
-                ))}
+                    }
+                  }}
+                  className="px-2.5 py-1.5 bg-[#101e33] border border-[#1d3252] rounded-xl text-xs text-cyan-300 hover:border-cyan-400 focus:outline-none cursor-pointer shrink-0"
+                  title="Chọn gợi ý vị trí / placeholder"
+                >
+                  <option value="" disabled>-- Gợi ý vị trí --</option>
+                  {getPlaceholderSuggestions().map((s) => (
+                    <option key={`a-${s}`} value={s} className="bg-[#0c1524] text-white">
+                      {s}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="text-[11px] font-semibold text-slate-300 block mb-1">
@@ -753,43 +765,36 @@ export const KnockoutBracketView: React.FC<Props> = ({ category }) => {
                 <label className="text-xs font-bold text-cyan-300">Đội 2 (B)</label>
                 <span className="text-[10px] text-slate-400">Placeholder / Vị trí</span>
               </div>
-              <input
-                type="text"
-                value={editingMatch.placeholderB || ''}
-                onChange={(e) => {
-                  editingMatch.placeholderB = e.target.value;
-                  setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
-                }}
-                placeholder="VD: Nhì Bảng B, Thắng TK-02..."
-                className="w-full px-3 py-1.5 bg-[#070d19] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
-              />
-              <div className="flex flex-wrap gap-1">
-                {category.groups.map((g) => (
-                  <button
-                    key={`bracket-edit-b-nhat-${g.id}`}
-                    type="button"
-                    onClick={() => {
-                      editingMatch.placeholderB = `Nhất ${g.name}`;
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  list="knockout-placeholder-suggestions"
+                  value={editingMatch.placeholderB || ''}
+                  onChange={(e) => {
+                    editingMatch.placeholderB = e.target.value;
+                    setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
+                  }}
+                  placeholder="VD: Nhì Bảng B, Thắng TK-02..."
+                  className="flex-1 px-3 py-1.5 bg-[#070d19] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
+                />
+                <select
+                  value=""
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      editingMatch.placeholderB = e.target.value;
                       setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
-                    }}
-                    className="px-1.5 py-0.5 text-[10px] bg-[#101e33] hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 rounded border border-[#1f3554] transition cursor-pointer"
-                  >
-                    + Nhất {g.name}
-                  </button>
-                ))}
-                {category.groups.map((g) => (
-                  <button
-                    key={`bracket-edit-b-nhi-${g.id}`}
-                    type="button"
-                    onClick={() => {
-                      editingMatch.placeholderB = `Nhì ${g.name}`;
-                      setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
-                    }}
-                    className="px-1.5 py-0.5 text-[10px] bg-[#101e33] hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 rounded border border-[#1f3554] transition cursor-pointer"
-                  >
-                    + Nhì {g.name}
-                  </button>
-                ))}
+                    }
+                  }}
+                  className="px-2.5 py-1.5 bg-[#101e33] border border-[#1d3252] rounded-xl text-xs text-cyan-300 hover:border-cyan-400 focus:outline-none cursor-pointer shrink-0"
+                  title="Chọn gợi ý vị trí / placeholder"
+                >
+                  <option value="" disabled>-- Gợi ý vị trí --</option>
+                  {getPlaceholderSuggestions().map((s) => (
+                    <option key={`b-${s}`} value={s} className="bg-[#0c1524] text-white">
+                      {s}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="text-[11px] font-semibold text-slate-300 block mb-1">
@@ -870,6 +875,39 @@ export const KnockoutBracketView: React.FC<Props> = ({ category }) => {
           </form>
         </div>
       )}
+
+      {/* Datalist gợi ý placeholder vòng trong */}
+      <datalist id="knockout-placeholder-suggestions">
+        {getPlaceholderSuggestions().map((s) => (
+          <option key={s} value={s} />
+        ))}
+      </datalist>
+
+      {/* Datalist 24h presets */}
+      <datalist id="time-presets-24h">
+        <option value="07:00" />
+        <option value="07:30" />
+        <option value="08:00" />
+        <option value="08:25" />
+        <option value="08:30" />
+        <option value="08:50" />
+        <option value="09:00" />
+        <option value="09:15" />
+        <option value="09:30" />
+        <option value="10:00" />
+        <option value="10:30" />
+        <option value="11:00" />
+        <option value="13:30" />
+        <option value="14:00" />
+        <option value="14:30" />
+        <option value="15:00" />
+        <option value="15:30" />
+        <option value="16:00" />
+        <option value="16:30" />
+        <option value="17:00" />
+        <option value="17:30" />
+        <option value="18:00" />
+      </datalist>
     </div>
   );
 };

@@ -473,35 +473,30 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                 <label className="text-xs font-bold text-cyan-300">Đội 1 (A)</label>
                 <span className="text-[10px] text-slate-400">Placeholder / Vị trí</span>
               </div>
-              <input
-                type="text"
-                list="knockout-placeholder-suggestions"
-                value={customPlaceholderA}
-                onChange={(e) => setCustomPlaceholderA(e.target.value)}
-                placeholder="VD: Nhất Bảng A, Thắng TK-01..."
-                className="w-full px-3 py-1.5 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
-              />
-              <div className="flex flex-wrap gap-1">
-                {category.groups.map((g) => (
-                  <button
-                    key={`custom-a-nhat-${g.id}`}
-                    type="button"
-                    onClick={() => setCustomPlaceholderA(`Nhất ${g.name}`)}
-                    className="px-1.5 py-0.5 text-[10px] bg-[#101e33] hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 rounded border border-[#1f3554] transition"
-                  >
-                    + Nhất {g.name}
-                  </button>
-                ))}
-                {category.groups.map((g) => (
-                  <button
-                    key={`custom-a-nhi-${g.id}`}
-                    type="button"
-                    onClick={() => setCustomPlaceholderA(`Nhì ${g.name}`)}
-                    className="px-1.5 py-0.5 text-[10px] bg-[#101e33] hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 rounded border border-[#1f3554] transition"
-                  >
-                    + Nhì {g.name}
-                  </button>
-                ))}
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  list="knockout-placeholder-suggestions"
+                  value={customPlaceholderA}
+                  onChange={(e) => setCustomPlaceholderA(e.target.value)}
+                  placeholder="VD: Nhất Bảng A, Thắng TK-01..."
+                  className="flex-1 px-3 py-1.5 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
+                />
+                <select
+                  value=""
+                  onChange={(e) => {
+                    if (e.target.value) setCustomPlaceholderA(e.target.value);
+                  }}
+                  className="px-2.5 py-1.5 bg-[#101e33] border border-[#1d3252] rounded-xl text-xs text-cyan-300 hover:border-cyan-400 focus:outline-none cursor-pointer shrink-0"
+                  title="Chọn gợi ý vị trí / placeholder"
+                >
+                  <option value="" disabled>-- Gợi ý vị trí --</option>
+                  {getPlaceholderSuggestions().map((s) => (
+                    <option key={`custom-a-${s}`} value={s} className="bg-[#0c1524] text-white">
+                      {s}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="text-[11px] font-semibold text-slate-300 block mb-1">
@@ -530,35 +525,30 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                 <label className="text-xs font-bold text-cyan-300">Đội 2 (B)</label>
                 <span className="text-[10px] text-slate-400">Placeholder / Vị trí</span>
               </div>
-              <input
-                type="text"
-                list="knockout-placeholder-suggestions"
-                value={customPlaceholderB}
-                onChange={(e) => setCustomPlaceholderB(e.target.value)}
-                placeholder="VD: Nhì Bảng B, Thắng TK-02..."
-                className="w-full px-3 py-1.5 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
-              />
-              <div className="flex flex-wrap gap-1">
-                {category.groups.map((g) => (
-                  <button
-                    key={`custom-b-nhat-${g.id}`}
-                    type="button"
-                    onClick={() => setCustomPlaceholderB(`Nhất ${g.name}`)}
-                    className="px-1.5 py-0.5 text-[10px] bg-[#101e33] hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 rounded border border-[#1f3554] transition"
-                  >
-                    + Nhất {g.name}
-                  </button>
-                ))}
-                {category.groups.map((g) => (
-                  <button
-                    key={`custom-b-nhi-${g.id}`}
-                    type="button"
-                    onClick={() => setCustomPlaceholderB(`Nhì ${g.name}`)}
-                    className="px-1.5 py-0.5 text-[10px] bg-[#101e33] hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 rounded border border-[#1f3554] transition"
-                  >
-                    + Nhì {g.name}
-                  </button>
-                ))}
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  list="knockout-placeholder-suggestions"
+                  value={customPlaceholderB}
+                  onChange={(e) => setCustomPlaceholderB(e.target.value)}
+                  placeholder="VD: Nhì Bảng B, Thắng TK-02..."
+                  className="flex-1 px-3 py-1.5 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
+                />
+                <select
+                  value=""
+                  onChange={(e) => {
+                    if (e.target.value) setCustomPlaceholderB(e.target.value);
+                  }}
+                  className="px-2.5 py-1.5 bg-[#101e33] border border-[#1d3252] rounded-xl text-xs text-cyan-300 hover:border-cyan-400 focus:outline-none cursor-pointer shrink-0"
+                  title="Chọn gợi ý vị trí / placeholder"
+                >
+                  <option value="" disabled>-- Gợi ý vị trí --</option>
+                  {getPlaceholderSuggestions().map((s) => (
+                    <option key={`custom-b-${s}`} value={s} className="bg-[#0c1524] text-white">
+                      {s}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="text-[11px] font-semibold text-slate-300 block mb-1">
@@ -933,44 +923,36 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                 <label className="text-xs font-bold text-cyan-300">Đội 1 (A)</label>
                 <span className="text-[10px] text-slate-400">Placeholder / Vị trí</span>
               </div>
-              <input
-                type="text"
-                list="knockout-placeholder-suggestions"
-                value={editingMatch.placeholderA || ''}
-                onChange={(e) => {
-                  editingMatch.placeholderA = e.target.value;
-                  setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
-                }}
-                placeholder="VD: Nhất Bảng A, Thắng TK-01..."
-                className="w-full px-3 py-1.5 bg-[#070d19] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
-              />
-              <div className="flex flex-wrap gap-1">
-                {category.groups.map((g) => (
-                  <button
-                    key={`edit-a-nhat-${g.id}`}
-                    type="button"
-                    onClick={() => {
-                      editingMatch.placeholderA = `Nhất ${g.name}`;
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  list="knockout-placeholder-suggestions"
+                  value={editingMatch.placeholderA || ''}
+                  onChange={(e) => {
+                    editingMatch.placeholderA = e.target.value;
+                    setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
+                  }}
+                  placeholder="VD: Nhất Bảng A, Thắng TK-01..."
+                  className="flex-1 px-3 py-1.5 bg-[#070d19] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
+                />
+                <select
+                  value=""
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      editingMatch.placeholderA = e.target.value;
                       setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
-                    }}
-                    className="px-1.5 py-0.5 text-[10px] bg-[#101e33] hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 rounded border border-[#1f3554] transition"
-                  >
-                    + Nhất {g.name}
-                  </button>
-                ))}
-                {category.groups.map((g) => (
-                  <button
-                    key={`edit-a-nhi-${g.id}`}
-                    type="button"
-                    onClick={() => {
-                      editingMatch.placeholderA = `Nhì ${g.name}`;
-                      setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
-                    }}
-                    className="px-1.5 py-0.5 text-[10px] bg-[#101e33] hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 rounded border border-[#1f3554] transition"
-                  >
-                    + Nhì {g.name}
-                  </button>
-                ))}
+                    }
+                  }}
+                  className="px-2.5 py-1.5 bg-[#101e33] border border-[#1d3252] rounded-xl text-xs text-cyan-300 hover:border-cyan-400 focus:outline-none cursor-pointer shrink-0"
+                  title="Chọn gợi ý vị trí / placeholder"
+                >
+                  <option value="" disabled>-- Gợi ý vị trí --</option>
+                  {getPlaceholderSuggestions().map((s) => (
+                    <option key={`edit-a-${s}`} value={s} className="bg-[#0c1524] text-white">
+                      {s}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="text-[11px] font-semibold text-slate-300 block mb-1">
@@ -1003,44 +985,36 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                 <label className="text-xs font-bold text-cyan-300">Đội 2 (B)</label>
                 <span className="text-[10px] text-slate-400">Placeholder / Vị trí</span>
               </div>
-              <input
-                type="text"
-                list="knockout-placeholder-suggestions"
-                value={editingMatch.placeholderB || ''}
-                onChange={(e) => {
-                  editingMatch.placeholderB = e.target.value;
-                  setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
-                }}
-                placeholder="VD: Nhì Bảng B, Thắng TK-02..."
-                className="w-full px-3 py-1.5 bg-[#070d19] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
-              />
-              <div className="flex flex-wrap gap-1">
-                {category.groups.map((g) => (
-                  <button
-                    key={`edit-b-nhat-${g.id}`}
-                    type="button"
-                    onClick={() => {
-                      editingMatch.placeholderB = `Nhất ${g.name}`;
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  list="knockout-placeholder-suggestions"
+                  value={editingMatch.placeholderB || ''}
+                  onChange={(e) => {
+                    editingMatch.placeholderB = e.target.value;
+                    setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
+                  }}
+                  placeholder="VD: Nhì Bảng B, Thắng TK-02..."
+                  className="flex-1 px-3 py-1.5 bg-[#070d19] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
+                />
+                <select
+                  value=""
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      editingMatch.placeholderB = e.target.value;
                       setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
-                    }}
-                    className="px-1.5 py-0.5 text-[10px] bg-[#101e33] hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 rounded border border-[#1f3554] transition"
-                  >
-                    + Nhất {g.name}
-                  </button>
-                ))}
-                {category.groups.map((g) => (
-                  <button
-                    key={`edit-b-nhi-${g.id}`}
-                    type="button"
-                    onClick={() => {
-                      editingMatch.placeholderB = `Nhì ${g.name}`;
-                      setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
-                    }}
-                    className="px-1.5 py-0.5 text-[10px] bg-[#101e33] hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 rounded border border-[#1f3554] transition"
-                  >
-                    + Nhì {g.name}
-                  </button>
-                ))}
+                    }
+                  }}
+                  className="px-2.5 py-1.5 bg-[#101e33] border border-[#1d3252] rounded-xl text-xs text-cyan-300 hover:border-cyan-400 focus:outline-none cursor-pointer shrink-0"
+                  title="Chọn gợi ý vị trí / placeholder"
+                >
+                  <option value="" disabled>-- Gợi ý vị trí --</option>
+                  {getPlaceholderSuggestions().map((s) => (
+                    <option key={`edit-b-${s}`} value={s} className="bg-[#0c1524] text-white">
+                      {s}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="text-[11px] font-semibold text-slate-300 block mb-1">
