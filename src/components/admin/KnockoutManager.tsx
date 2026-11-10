@@ -476,7 +476,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
               <div className="flex gap-2">
                 <input
                   type="text"
-                  list="knockout-placeholder-suggestions"
+                  autoComplete="off"
                   value={customPlaceholderA}
                   onChange={(e) => setCustomPlaceholderA(e.target.value)}
                   placeholder="VD: Nhất Bảng A, Thắng TK-01..."
@@ -528,7 +528,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
               <div className="flex gap-2">
                 <input
                   type="text"
-                  list="knockout-placeholder-suggestions"
+                  autoComplete="off"
                   value={customPlaceholderB}
                   onChange={(e) => setCustomPlaceholderB(e.target.value)}
                   placeholder="VD: Nhì Bảng B, Thắng TK-02..."
@@ -926,7 +926,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
               <div className="flex gap-2">
                 <input
                   type="text"
-                  list="knockout-placeholder-suggestions"
+                  autoComplete="off"
                   value={editingMatch.placeholderA || ''}
                   onChange={(e) => {
                     editingMatch.placeholderA = e.target.value;
@@ -988,7 +988,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
               <div className="flex gap-2">
                 <input
                   type="text"
-                  list="knockout-placeholder-suggestions"
+                  autoComplete="off"
                   value={editingMatch.placeholderB || ''}
                   onChange={(e) => {
                     editingMatch.placeholderB = e.target.value;
@@ -1105,13 +1105,6 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
           onSave={handleSaveScore}
         />
       )}
-
-      {/* Datalist gợi ý placeholder vòng trong */}
-      <datalist id="knockout-placeholder-suggestions">
-        {getPlaceholderSuggestions().map((s) => (
-          <option key={s} value={s} />
-        ))}
-      </datalist>
 
       {/* Datalist 24h presets */}
       <datalist id="time-presets-24h">

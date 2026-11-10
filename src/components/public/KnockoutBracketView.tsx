@@ -706,7 +706,7 @@ export const KnockoutBracketView: React.FC<Props> = ({ category }) => {
               <div className="flex gap-2">
                 <input
                   type="text"
-                  list="knockout-placeholder-suggestions"
+                  autoComplete="off"
                   value={editingMatch.placeholderA || ''}
                   onChange={(e) => {
                     editingMatch.placeholderA = e.target.value;
@@ -768,7 +768,7 @@ export const KnockoutBracketView: React.FC<Props> = ({ category }) => {
               <div className="flex gap-2">
                 <input
                   type="text"
-                  list="knockout-placeholder-suggestions"
+                  autoComplete="off"
                   value={editingMatch.placeholderB || ''}
                   onChange={(e) => {
                     editingMatch.placeholderB = e.target.value;
@@ -875,13 +875,6 @@ export const KnockoutBracketView: React.FC<Props> = ({ category }) => {
           </form>
         </div>
       )}
-
-      {/* Datalist gợi ý placeholder vòng trong */}
-      <datalist id="knockout-placeholder-suggestions">
-        {getPlaceholderSuggestions().map((s) => (
-          <option key={s} value={s} />
-        ))}
-      </datalist>
 
       {/* Datalist 24h presets */}
       <datalist id="time-presets-24h">
