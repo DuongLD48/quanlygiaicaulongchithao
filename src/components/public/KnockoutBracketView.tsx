@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Category, Match } from '../../models';
+import { Category, Match, Team } from '../../models';
 import { useTournament } from '../../context/TournamentContext';
 import { KnockoutScheduler } from '../../engine';
 import { ScoreModal } from '../admin/ScoreModal';
@@ -114,6 +114,27 @@ export const KnockoutBracketView: React.FC<Props> = ({ category }) => {
         : primaryFinal.teamA
       : null;
   const thirdPlace = primaryThird?.getWinner();
+
+  // Lấy tên VĐV (không hiện tên đội như A1, A2...) cho phần vinh danh Podium
+  const getPodiumAthleteNames = (team: Team | null | undefined): string => {
+    if (!team) return '';
+    if (team.players && team.players.length > 0) {
+      const names = team.players
+        .map((p) => p.fullName)
+        .filter(Boolean)
+        .join(' / ');
+      if (names.trim()) return names;
+    }
+    const matchedTeam = allCategoryTeams.find((t) => t.id === team.id || t.name === team.name);
+    if (matchedTeam && matchedTeam.players && matchedTeam.players.length > 0) {
+      const names = matchedTeam.players
+        .map((p) => p.fullName)
+        .filter(Boolean)
+        .join(' / ');
+      if (names.trim()) return names;
+    }
+    return team.name || 'Chưa xác định';
+  };
 
   const handleSaveScore = async (updatedMatch: Match) => {
     if (!tournament) return;
@@ -402,7 +423,7 @@ export const KnockoutBracketView: React.FC<Props> = ({ category }) => {
               </span>
               {champion ? (
                 <div className="font-black text-white text-xs truncate mt-0.5">
-                  {champion.getDisplayName()}
+                  {getPodiumAthleteNames(champion)}
                 </div>
               ) : (
                 <span className="text-xs font-medium text-amber-200/60 italic mt-0.5 block">
@@ -423,7 +444,7 @@ export const KnockoutBracketView: React.FC<Props> = ({ category }) => {
               </span>
               {runnerUp ? (
                 <div className="font-black text-white text-xs truncate mt-0.5">
-                  {runnerUp.getDisplayName()}
+                  {getPodiumAthleteNames(runnerUp)}
                 </div>
               ) : (
                 <span className="text-xs font-medium text-slate-400 italic mt-0.5 block">
@@ -444,7 +465,7 @@ export const KnockoutBracketView: React.FC<Props> = ({ category }) => {
               </span>
               {thirdPlace ? (
                 <div className="font-black text-white text-xs truncate mt-0.5">
-                  {thirdPlace.getDisplayName()}
+                  {getPodiumAthleteNames(thirdPlace)}
                 </div>
               ) : (
                 <span className="text-xs font-medium text-amber-200/60 italic mt-0.5 block">
