@@ -5,6 +5,7 @@ import { StageRuleConfig } from './StageRuleConfig';
 
 export interface ITournamentContentConfig {
   websiteTitle?: string;
+  metaDescription?: string;
   tournamentName?: string;
   tournamentSubtitle?: string;
   footerText?: string;
@@ -21,10 +22,11 @@ export interface ITournamentContentConfig {
 }
 
 export const DEFAULT_CONTENT_CONFIG: ITournamentContentConfig = {
-  websiteTitle: 'Quản Lý Giải Cầu Lông - CLB Cầu Lông Chí Thảo',
-  tournamentName: 'Giải Cầu Lông CLB Chí Thảo 2026',
+  websiteTitle: 'Giải Cầu Lông CLB Daha Badminton',
+  metaDescription: '',
+  tournamentName: 'Giải Cầu Lông CLB Daha Badminton 2026',
   tournamentSubtitle: 'Tiêu chuẩn thi đấu và xếp hạng thời gian thực',
-  footerText: 'Giải Cầu Lông CLB Chí Thảo 2026 • CLB Cầu Lông Chí Thảo',
+  footerText: 'Giải Cầu Lông CLB Daha Badminton 2026 • CLB Daha Badminton',
   rulesTitle: 'Điều Lệ & Quy Tắc Tính Điểm Giải Đấu',
   rulesGroupStage: 'Thi đấu vòng tròn tính điểm. Tất cả các trận Vòng Bảng thi đấu 1 set chạm 21 hoặc 31 điểm (tùy thể thức cài đặt), đổi sân khi một đội đạt mốc nửa set (11 hoặc 16 điểm).',
   rulesKnockoutStage: 'Bán kết & Chung kết thi đấu loại trực tiếp. Đội thắng giành quyền đi tiếp vào Chung kết, đội thua vào tranh Hạng Ba.',

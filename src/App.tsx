@@ -44,13 +44,35 @@ const TournamentDashboard: React.FC = () => {
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const [isDbModalOpen, setIsDbModalOpen] = useState(false);
 
-  // Cập nhật tiêu đề trang web động
+  // Cập nhật tiêu đề trang web & meta tags động
   React.useEffect(() => {
-    if (tournament?.contentConfig?.websiteTitle) {
-      document.title = tournament.contentConfig.websiteTitle;
-    } else if (tournament?.name) {
-      document.title = `${tournament.name} - Quản Lý Giải Cầu Lông`;
-    }
+    const title =
+      tournament?.contentConfig?.websiteTitle ||
+      (tournament?.name ? `${tournament.name} - CLB Daha Badminton` : 'Giải Cầu Lông CLB Daha Badminton');
+    document.title = title;
+
+    const updateMeta = (nameOrProp: string, content: string | undefined, isProperty = false) => {
+      const attr = isProperty ? 'property' : 'name';
+      let el = document.querySelector(`meta[${attr}="${nameOrProp}"]`);
+      if (!content || !content.trim()) {
+        if (el) el.remove();
+        return;
+      }
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute(attr, nameOrProp);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', content.trim());
+    };
+
+    updateMeta('og:title', title, true);
+    updateMeta('twitter:title', title);
+
+    const desc = tournament?.contentConfig?.metaDescription;
+    updateMeta('description', desc);
+    updateMeta('og:description', desc, true);
+    updateMeta('twitter:description', desc);
   }, [tournament]);
 
   // Chọn Category hợp lệ
@@ -149,7 +171,7 @@ const TournamentDashboard: React.FC = () => {
         {/* Footer */}
         <footer className="bg-[#08101c] border-t border-[#14233a] py-4 mt-auto text-center text-xs text-slate-500">
           <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <p>© 2026 CLB Cầu Lông Chí Thảo</p>
+            <p>© 2026 CLB Daha Badminton</p>
             <button
               type="button"
               onClick={() => setIsAdminModalOpen(true)}
@@ -314,7 +336,7 @@ const TournamentDashboard: React.FC = () => {
       {/* Footer */}
       <footer className="bg-[#08101c] border-t border-[#14233a] py-4 mt-auto text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p>© 2026 {tournament.contentConfig?.footerText || `${tournament.name} • CLB Cầu Lông Chí Thảo`}</p>
+          <p>© 2026 {tournament.contentConfig?.footerText || `${tournament.name} • CLB Daha Badminton`}</p>
           <button
             type="button"
             onClick={() => setIsAdminModalOpen(true)}

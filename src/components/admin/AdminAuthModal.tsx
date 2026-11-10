@@ -17,6 +17,18 @@ export const AdminAuthModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const [confirmPin, setConfirmPin] = useState('');
   const [changeSuccess, setChangeSuccess] = useState(false);
 
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    const originalTouchAction = document.body.style.touchAction;
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.touchAction = originalTouchAction;
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -64,8 +76,14 @@ export const AdminAuthModal: React.FC<Props> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
-      <div className="bg-[#0c1524] border border-[#16263f] rounded-3xl p-5 sm:p-7 max-w-sm w-full shadow-2xl text-slate-100 max-h-[90vh] overflow-y-auto">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-4 animate-fade-in overscroll-contain"
+      onClick={onClose}
+    >
+      <div
+        className="bg-[#0c1524] border border-[#16263f] rounded-3xl p-5 sm:p-7 max-w-sm w-full shadow-2xl text-slate-100 max-h-[90vh] overflow-y-auto overflow-x-hidden touch-pan-y"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-[#16263f]">
           <div className="flex items-center gap-2 text-white font-black text-sm uppercase tracking-wide">

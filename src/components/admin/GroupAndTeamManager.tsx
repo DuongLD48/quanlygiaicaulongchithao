@@ -34,6 +34,18 @@ export const GroupAndTeamManager: React.FC<Props> = ({ category }) => {
   // Sửa đội
   const [editingTeam, setEditingTeam] = useState<Team | null>(null);
 
+  React.useEffect(() => {
+    if (!editingTeam) return;
+    const originalOverflow = document.body.style.overflow;
+    const originalTouchAction = document.body.style.touchAction;
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.touchAction = originalTouchAction;
+    };
+  }, [editingTeam]);
+
   const activeGroup = category.groups.find((g) => g.id === activeGroupId) || category.groups[0];
 
   if (!tournament) return null;
@@ -424,10 +436,14 @@ export const GroupAndTeamManager: React.FC<Props> = ({ category }) => {
 
       {/* Modal chỉnh sửa đội */}
       {editingTeam && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-4 animate-fade-in overscroll-contain"
+          onClick={() => setEditingTeam(null)}
+        >
           <form
             onSubmit={handleSaveEditTeam}
-            className="bg-[#0c1524] rounded-3xl p-5 max-w-md w-full border border-[#16263f] shadow-2xl space-y-4 text-slate-100 max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+            className="bg-[#0c1524] rounded-3xl p-4 sm:p-5 max-w-md w-full border border-[#16263f] shadow-2xl space-y-4 text-slate-100 max-h-[90vh] overflow-y-auto overflow-x-hidden touch-pan-y"
           >
             <div className="flex items-center justify-between pb-2 border-b border-[#16263f]">
               <h4 className="font-bold text-sm text-white">Chỉnh Sửa Thông Tin Đội</h4>

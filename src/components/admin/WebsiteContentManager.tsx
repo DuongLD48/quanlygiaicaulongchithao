@@ -140,17 +140,33 @@ export const WebsiteContentManager: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-[11px] font-semibold text-slate-300 block mb-1">
-                Tiêu đề trình duyệt / Brand Title:
+                Tiêu đề Metafield / Tab trình duyệt (Meta Title):
               </label>
               <input
                 type="text"
                 value={form.websiteTitle || ''}
                 onChange={(e) => handleChange('websiteTitle', e.target.value)}
-                placeholder="VD: Quản Lý Giải Cầu Lông - CLB Cầu Lông Chí Thảo"
+                placeholder="VD: Giải Cầu Lông CLB Daha Badminton"
                 className="w-full px-3 py-2 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
               />
               <span className="text-[10px] text-slate-500 block mt-1">
-                Hiển thị trên tab trình duyệt và tiêu đề chính của trang.
+                Hiển thị trên tab trình duyệt và tiêu đề chính khi chia sẻ link (Zalo, Facebook, v.v.).
+              </span>
+            </div>
+
+            <div>
+              <label className="text-[11px] font-semibold text-slate-300 block mb-1">
+                Mô tả Metafield khi chia sẻ link (Meta Description):
+              </label>
+              <input
+                type="text"
+                value={form.metaDescription || ''}
+                onChange={(e) => handleChange('metaDescription', e.target.value)}
+                placeholder="Để trống nếu không muốn hiện mô tả khi chia sẻ link"
+                className="w-full px-3 py-2 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
+              />
+              <span className="text-[10px] text-slate-500 block mt-1">
+                Dòng mô tả bên dưới link khi chia sẻ. Để trống nếu muốn ẩn hoàn toàn.
               </span>
             </div>
 
@@ -162,7 +178,7 @@ export const WebsiteContentManager: React.FC = () => {
                 type="text"
                 value={form.tournamentName || ''}
                 onChange={(e) => handleChange('tournamentName', e.target.value)}
-                placeholder="VD: Giải Cầu Lông CLB Chí Thảo 2026"
+                placeholder="VD: Giải Cầu Lông CLB Daha Badminton 2026"
                 className="w-full px-3 py-2 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none font-bold"
               />
               <span className="text-[10px] text-slate-500 block mt-1">
@@ -186,7 +202,7 @@ export const WebsiteContentManager: React.FC = () => {
               </span>
             </div>
 
-            <div>
+            <div className="md:col-span-2">
               <label className="text-[11px] font-semibold text-slate-300 block mb-1">
                 Văn Bản Chân Trang (Footer):
               </label>
@@ -194,7 +210,7 @@ export const WebsiteContentManager: React.FC = () => {
                 type="text"
                 value={form.footerText || ''}
                 onChange={(e) => handleChange('footerText', e.target.value)}
-                placeholder="VD: Giải Cầu Lông CLB Chí Thảo 2026 • CLB Cầu Lông Chí Thảo"
+                placeholder="VD: Giải Cầu Lông CLB Daha Badminton 2026 • CLB Daha Badminton"
                 className="w-full px-3 py-2 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
               />
               <span className="text-[10px] text-slate-500 block mt-1">

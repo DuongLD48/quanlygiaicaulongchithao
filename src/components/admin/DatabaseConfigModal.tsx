@@ -28,6 +28,18 @@ export const DatabaseConfigModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const [showJsonTab, setShowJsonTab] = useState(false);
   const [savedMessage, setSavedMessage] = useState(false);
 
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    const originalTouchAction = document.body.style.touchAction;
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.touchAction = originalTouchAction;
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const handleParseJson = () => {
@@ -79,8 +91,14 @@ export const DatabaseConfigModal: React.FC<Props> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
-      <div className="bg-[#0c1524] rounded-3xl shadow-2xl max-w-lg w-full border border-[#16263f] overflow-hidden flex flex-col max-h-[90vh] text-slate-100">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-4 animate-fade-in overscroll-contain"
+      onClick={onClose}
+    >
+      <div
+        className="bg-[#0c1524] rounded-3xl shadow-2xl max-w-lg w-full border border-[#16263f] overflow-hidden flex flex-col max-h-[90vh] text-slate-100 touch-pan-y"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-4 bg-[#091120] border-b border-[#16263f]">
           <div className="flex items-center gap-2.5">

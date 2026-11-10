@@ -66,6 +66,18 @@ const getAthleteDisplay = (team: Team | null): string => {
 export const StandingsView: React.FC<Props> = ({ category, searchQuery = '' }) => {
   const { tournament, saveTournament, isAdmin, isRealtimeConnected, connectionError } = useTournament();
   const [isRankModalOpen, setIsRankModalOpen] = useState(false);
+
+  React.useEffect(() => {
+    if (!isRankModalOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    const originalTouchAction = document.body.style.touchAction;
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.touchAction = originalTouchAction;
+    };
+  }, [isRankModalOpen]);
   const [scoringMatch, setScoringMatch] = useState<Match | null>(null);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
@@ -450,8 +462,14 @@ export const StandingsView: React.FC<Props> = ({ category, searchQuery = '' }) =
 
       {/* Modal: Cách tính xếp hạng */}
       {isRankModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
-          <div className="bg-[#0c1524] border border-[#1e314f] rounded-3xl p-5 sm:p-7 max-w-md w-full shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+        <div 
+          onClick={() => setIsRankModalOpen(false)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in overscroll-contain"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-[#0c1524] border border-[#1e314f] rounded-3xl p-5 sm:p-7 max-w-md w-full shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto overscroll-contain touch-pan-y"
+          >
             <div className="flex items-center justify-between pb-3 border-b border-[#16263f]">
               <h3 className="font-black text-sm sm:text-base text-white flex items-center gap-2">
                 <HelpCircle className="w-5 h-5 text-cyan-400" />

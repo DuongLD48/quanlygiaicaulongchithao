@@ -18,6 +18,18 @@ export const ScoreModal: React.FC<Props> = ({ match, isOpen, onClose, onSave }) 
   const [status, setStatus] = useState<MatchStatus>(workingMatch.status);
   const [winnerId, setWinnerId] = useState<string | null>(workingMatch.winnerId);
 
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    const originalTouchAction = document.body.style.touchAction;
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.touchAction = originalTouchAction;
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const rule = workingMatch.rule;
@@ -114,8 +126,14 @@ export const ScoreModal: React.FC<Props> = ({ match, isOpen, onClose, onSave }) 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-4 animate-fade-in">
-      <div className="bg-[#0c1524] rounded-3xl shadow-2xl max-w-lg w-full border border-[#16263f] overflow-hidden flex flex-col text-slate-100 max-h-[92vh]">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-4 animate-fade-in overscroll-contain"
+      onClick={onClose}
+    >
+      <div
+        className="bg-[#0c1524] rounded-3xl shadow-2xl max-w-lg w-full border border-[#16263f] overflow-hidden flex flex-col text-slate-100 max-h-[92vh] touch-pan-y"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-4 bg-[#091120] border-b border-[#16263f] shrink-0">
           <div className="flex items-center gap-2">

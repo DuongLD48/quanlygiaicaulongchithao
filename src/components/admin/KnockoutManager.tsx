@@ -37,6 +37,18 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
   // Chỉnh sửa trận knockout
   const [editingMatch, setEditingMatch] = useState<Match | null>(null);
 
+  React.useEffect(() => {
+    if (!editingMatch) return;
+    const originalOverflow = document.body.style.overflow;
+    const originalTouchAction = document.body.style.touchAction;
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.touchAction = originalTouchAction;
+    };
+  }, [editingMatch]);
+
   // Danh sách các vòng knockout lấy trực tiếp từ Tùy Chỉnh Thể Thức Thi Đấu
   const knockoutStages = [
     { key: 'roundOf16', label: 'Vòng 1/8', prefix: 'V18', rule: category.rulesConfig.roundOf16 },
@@ -473,24 +485,24 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                 <label className="text-xs font-bold text-cyan-300">Đội 1 (A)</label>
                 <span className="text-[10px] text-slate-400">Placeholder / Vị trí</span>
               </div>
-              <div className="flex gap-2">
+              <div className="space-y-1.5">
                 <input
                   type="text"
                   autoComplete="off"
                   value={customPlaceholderA}
                   onChange={(e) => setCustomPlaceholderA(e.target.value)}
-                  placeholder="VD: Nhất Bảng A, Thắng TK-01..."
-                  className="flex-1 px-3 py-1.5 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
+                  placeholder="Nhập vị trí (VD: Nhất Bảng A, Thắng TK-01...)"
+                  className="w-full px-3 py-2 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
                 />
                 <select
                   value=""
                   onChange={(e) => {
                     if (e.target.value) setCustomPlaceholderA(e.target.value);
                   }}
-                  className="px-2 sm:px-2.5 py-1.5 bg-[#101e33] border border-[#1d3252] rounded-xl text-xs text-cyan-300 hover:border-cyan-400 focus:outline-none cursor-pointer shrink-0 max-w-[120px] sm:max-w-none"
+                  className="w-full px-3 py-1.5 bg-[#101e33] border border-[#1d3252] rounded-xl text-xs text-cyan-300 hover:border-cyan-400 focus:outline-none cursor-pointer truncate"
                   title="Chọn gợi ý vị trí / placeholder"
                 >
-                  <option value="" disabled>-- Gợi ý --</option>
+                  <option value="" disabled>-- Hoặc chọn nhanh từ danh sách gợi ý --</option>
                   {getPlaceholderSuggestions().map((s) => (
                     <option key={`custom-a-${s}`} value={s} className="bg-[#0c1524] text-white">
                       {s}
@@ -525,24 +537,24 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                 <label className="text-xs font-bold text-cyan-300">Đội 2 (B)</label>
                 <span className="text-[10px] text-slate-400">Placeholder / Vị trí</span>
               </div>
-              <div className="flex gap-2">
+              <div className="space-y-1.5">
                 <input
                   type="text"
                   autoComplete="off"
                   value={customPlaceholderB}
                   onChange={(e) => setCustomPlaceholderB(e.target.value)}
-                  placeholder="VD: Nhì Bảng B, Thắng TK-02..."
-                  className="flex-1 px-3 py-1.5 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
+                  placeholder="Nhập vị trí (VD: Nhì Bảng B, Thắng TK-02...)"
+                  className="w-full px-3 py-2 bg-[#0c1524] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
                 />
                 <select
                   value=""
                   onChange={(e) => {
                     if (e.target.value) setCustomPlaceholderB(e.target.value);
                   }}
-                  className="px-2 sm:px-2.5 py-1.5 bg-[#101e33] border border-[#1d3252] rounded-xl text-xs text-cyan-300 hover:border-cyan-400 focus:outline-none cursor-pointer shrink-0 max-w-[120px] sm:max-w-none"
+                  className="w-full px-3 py-1.5 bg-[#101e33] border border-[#1d3252] rounded-xl text-xs text-cyan-300 hover:border-cyan-400 focus:outline-none cursor-pointer truncate"
                   title="Chọn gợi ý vị trí / placeholder"
                 >
-                  <option value="" disabled>-- Gợi ý --</option>
+                  <option value="" disabled>-- Hoặc chọn nhanh từ danh sách gợi ý --</option>
                   {getPlaceholderSuggestions().map((s) => (
                     <option key={`custom-b-${s}`} value={s} className="bg-[#0c1524] text-white">
                       {s}
@@ -846,10 +858,14 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
 
       {/* Modal Sửa Trận Knockout */}
       {editingMatch && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-4 animate-fade-in overscroll-contain text-left"
+          onClick={() => setEditingMatch(null)}
+        >
           <form
             onSubmit={handleSaveEditMatch}
-            className="bg-[#0c1524] rounded-3xl p-5 max-w-lg w-full border border-[#16263f] shadow-2xl space-y-4 text-slate-100 max-h-[90vh] overflow-y-auto scrollbar-thin"
+            onClick={(e) => e.stopPropagation()}
+            className="bg-[#0c1524] rounded-3xl p-4 sm:p-5 max-w-lg w-full border border-[#16263f] shadow-2xl space-y-4 text-slate-100 max-h-[90vh] overflow-y-auto overflow-x-hidden touch-pan-y"
           >
             <div className="flex items-center justify-between pb-2 border-b border-[#16263f]">
               <h4 className="font-bold text-sm text-white">
@@ -923,7 +939,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                 <label className="text-xs font-bold text-cyan-300">Đội 1 (A)</label>
                 <span className="text-[10px] text-slate-400">Placeholder / Vị trí</span>
               </div>
-              <div className="flex gap-2">
+              <div className="space-y-1.5">
                 <input
                   type="text"
                   autoComplete="off"
@@ -932,8 +948,8 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                     editingMatch.placeholderA = e.target.value;
                     setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
                   }}
-                  placeholder="VD: Nhất Bảng A, Thắng TK-01..."
-                  className="flex-1 px-3 py-1.5 bg-[#070d19] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
+                  placeholder="Nhập vị trí (VD: Nhất Bảng A, Thắng TK-01...)"
+                  className="w-full px-3 py-2 bg-[#070d19] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
                 />
                 <select
                   value=""
@@ -943,10 +959,10 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                       setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
                     }
                   }}
-                  className="px-2 sm:px-2.5 py-1.5 bg-[#101e33] border border-[#1d3252] rounded-xl text-xs text-cyan-300 hover:border-cyan-400 focus:outline-none cursor-pointer shrink-0 max-w-[120px] sm:max-w-none"
+                  className="w-full px-3 py-1.5 bg-[#101e33] border border-[#1d3252] rounded-xl text-xs text-cyan-300 hover:border-cyan-400 focus:outline-none cursor-pointer truncate"
                   title="Chọn gợi ý vị trí / placeholder"
                 >
-                  <option value="" disabled>-- Gợi ý --</option>
+                  <option value="" disabled>-- Hoặc chọn nhanh từ danh sách gợi ý --</option>
                   {getPlaceholderSuggestions().map((s) => (
                     <option key={`edit-a-${s}`} value={s} className="bg-[#0c1524] text-white">
                       {s}
@@ -985,7 +1001,7 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                 <label className="text-xs font-bold text-cyan-300">Đội 2 (B)</label>
                 <span className="text-[10px] text-slate-400">Placeholder / Vị trí</span>
               </div>
-              <div className="flex gap-2">
+              <div className="space-y-1.5">
                 <input
                   type="text"
                   autoComplete="off"
@@ -994,8 +1010,8 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                     editingMatch.placeholderB = e.target.value;
                     setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
                   }}
-                  placeholder="VD: Nhì Bảng B, Thắng TK-02..."
-                  className="flex-1 px-3 py-1.5 bg-[#070d19] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
+                  placeholder="Nhập vị trí (VD: Nhì Bảng B, Thắng TK-02...)"
+                  className="w-full px-3 py-2 bg-[#070d19] border border-[#1d3252] rounded-xl text-xs text-white focus:border-cyan-400 focus:outline-none"
                 />
                 <select
                   value=""
@@ -1005,10 +1021,10 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                       setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
                     }
                   }}
-                  className="px-2 sm:px-2.5 py-1.5 bg-[#101e33] border border-[#1d3252] rounded-xl text-xs text-cyan-300 hover:border-cyan-400 focus:outline-none cursor-pointer shrink-0 max-w-[120px] sm:max-w-none"
+                  className="w-full px-3 py-1.5 bg-[#101e33] border border-[#1d3252] rounded-xl text-xs text-cyan-300 hover:border-cyan-400 focus:outline-none cursor-pointer truncate"
                   title="Chọn gợi ý vị trí / placeholder"
                 >
-                  <option value="" disabled>-- Gợi ý --</option>
+                  <option value="" disabled>-- Hoặc chọn nhanh từ danh sách gợi ý --</option>
                   {getPlaceholderSuggestions().map((s) => (
                     <option key={`edit-b-${s}`} value={s} className="bg-[#0c1524] text-white">
                       {s}
