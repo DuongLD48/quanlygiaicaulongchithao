@@ -108,21 +108,11 @@ export class Category {
     }
 
     // 2. Đồng bộ vòng knockout
-    const catCode = this.getShortCode();
     for (const match of this.knockoutMatches) {
       const stageRule = this.rulesConfig.getRuleForStage(match.roundName);
       match.rule = stageRule;
       if (match.status !== 'FINISHED') {
         match.recalculateStatus();
-      }
-
-      // Đảm bảo mã trận vòng trong có tiền tố thể loại (DN-, DNu-, DNN-...)
-      if (match.matchCode && !match.matchCode.startsWith(`${catCode}-`)) {
-        const knownCatPrefixes = ['DN-', 'DNu-', 'DNN-', 'DON-', 'DONu-', 'ND-'];
-        const hasOtherCat = knownCatPrefixes.some((p) => match.matchCode.startsWith(p));
-        if (!hasOtherCat) {
-          match.matchCode = `${catCode}-${match.matchCode}`;
-        }
       }
     }
   }
