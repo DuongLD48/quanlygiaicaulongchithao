@@ -487,10 +487,10 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                   onChange={(e) => {
                     if (e.target.value) setCustomPlaceholderA(e.target.value);
                   }}
-                  className="px-2.5 py-1.5 bg-[#101e33] border border-[#1d3252] rounded-xl text-xs text-cyan-300 hover:border-cyan-400 focus:outline-none cursor-pointer shrink-0"
+                  className="px-2 sm:px-2.5 py-1.5 bg-[#101e33] border border-[#1d3252] rounded-xl text-xs text-cyan-300 hover:border-cyan-400 focus:outline-none cursor-pointer shrink-0 max-w-[120px] sm:max-w-none"
                   title="Chọn gợi ý vị trí / placeholder"
                 >
-                  <option value="" disabled>-- Gợi ý vị trí --</option>
+                  <option value="" disabled>-- Gợi ý --</option>
                   {getPlaceholderSuggestions().map((s) => (
                     <option key={`custom-a-${s}`} value={s} className="bg-[#0c1524] text-white">
                       {s}
@@ -539,10 +539,10 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                   onChange={(e) => {
                     if (e.target.value) setCustomPlaceholderB(e.target.value);
                   }}
-                  className="px-2.5 py-1.5 bg-[#101e33] border border-[#1d3252] rounded-xl text-xs text-cyan-300 hover:border-cyan-400 focus:outline-none cursor-pointer shrink-0"
+                  className="px-2 sm:px-2.5 py-1.5 bg-[#101e33] border border-[#1d3252] rounded-xl text-xs text-cyan-300 hover:border-cyan-400 focus:outline-none cursor-pointer shrink-0 max-w-[120px] sm:max-w-none"
                   title="Chọn gợi ý vị trí / placeholder"
                 >
-                  <option value="" disabled>-- Gợi ý vị trí --</option>
+                  <option value="" disabled>-- Gợi ý --</option>
                   {getPlaceholderSuggestions().map((s) => (
                     <option key={`custom-b-${s}`} value={s} className="bg-[#0c1524] text-white">
                       {s}
@@ -943,10 +943,10 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                       setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
                     }
                   }}
-                  className="px-2.5 py-1.5 bg-[#101e33] border border-[#1d3252] rounded-xl text-xs text-cyan-300 hover:border-cyan-400 focus:outline-none cursor-pointer shrink-0"
+                  className="px-2 sm:px-2.5 py-1.5 bg-[#101e33] border border-[#1d3252] rounded-xl text-xs text-cyan-300 hover:border-cyan-400 focus:outline-none cursor-pointer shrink-0 max-w-[120px] sm:max-w-none"
                   title="Chọn gợi ý vị trí / placeholder"
                 >
-                  <option value="" disabled>-- Gợi ý vị trí --</option>
+                  <option value="" disabled>-- Gợi ý --</option>
                   {getPlaceholderSuggestions().map((s) => (
                     <option key={`edit-a-${s}`} value={s} className="bg-[#0c1524] text-white">
                       {s}
@@ -1005,10 +1005,10 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
                       setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
                     }
                   }}
-                  className="px-2.5 py-1.5 bg-[#101e33] border border-[#1d3252] rounded-xl text-xs text-cyan-300 hover:border-cyan-400 focus:outline-none cursor-pointer shrink-0"
+                  className="px-2 sm:px-2.5 py-1.5 bg-[#101e33] border border-[#1d3252] rounded-xl text-xs text-cyan-300 hover:border-cyan-400 focus:outline-none cursor-pointer shrink-0 max-w-[120px] sm:max-w-none"
                   title="Chọn gợi ý vị trí / placeholder"
                 >
-                  <option value="" disabled>-- Gợi ý vị trí --</option>
+                  <option value="" disabled>-- Gợi ý --</option>
                   {getPlaceholderSuggestions().map((s) => (
                     <option key={`edit-b-${s}`} value={s} className="bg-[#0c1524] text-white">
                       {s}

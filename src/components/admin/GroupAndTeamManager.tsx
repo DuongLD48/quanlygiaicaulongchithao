@@ -427,7 +427,7 @@ export const GroupAndTeamManager: React.FC<Props> = ({ category }) => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
           <form
             onSubmit={handleSaveEditTeam}
-            className="bg-[#0c1524] rounded-3xl p-5 max-w-md w-full border border-[#16263f] shadow-2xl space-y-4 text-slate-100"
+            className="bg-[#0c1524] rounded-3xl p-5 max-w-md w-full border border-[#16263f] shadow-2xl space-y-4 text-slate-100 max-h-[90vh] overflow-y-auto"
           >
             <div className="flex items-center justify-between pb-2 border-b border-[#16263f]">
               <h4 className="font-bold text-sm text-white">Chỉnh Sửa Thông Tin Đội</h4>

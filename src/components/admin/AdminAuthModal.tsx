@@ -65,7 +65,7 @@ export const AdminAuthModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
-      <div className="bg-[#0c1524] border border-[#16263f] rounded-3xl p-6 sm:p-7 max-w-sm w-full shadow-2xl text-slate-100">
+      <div className="bg-[#0c1524] border border-[#16263f] rounded-3xl p-5 sm:p-7 max-w-sm w-full shadow-2xl text-slate-100 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-[#16263f]">
           <div className="flex items-center gap-2 text-white font-black text-sm uppercase tracking-wide">

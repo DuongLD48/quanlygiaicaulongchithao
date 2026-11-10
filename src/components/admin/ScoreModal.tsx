@@ -114,10 +114,10 @@ export const ScoreModal: React.FC<Props> = ({ match, isOpen, onClose, onSave }) 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
-      <div className="bg-[#0c1524] rounded-3xl shadow-2xl max-w-lg w-full border border-[#16263f] overflow-hidden flex flex-col text-slate-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-4 animate-fade-in">
+      <div className="bg-[#0c1524] rounded-3xl shadow-2xl max-w-lg w-full border border-[#16263f] overflow-hidden flex flex-col text-slate-100 max-h-[92vh]">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-[#091120] border-b border-[#16263f]">
+        <div className="flex items-center justify-between p-4 bg-[#091120] border-b border-[#16263f] shrink-0">
           <div className="flex items-center gap-2">
             <span className="px-2 py-0.5 bg-[#101e33] border border-[#1d3252] text-cyan-300 font-mono text-xs font-black rounded">
               {workingMatch.matchCode}
@@ -135,7 +135,7 @@ export const ScoreModal: React.FC<Props> = ({ match, isOpen, onClose, onSave }) 
         </div>
 
         {/* Thể thức trận đấu */}
-        <div className="bg-[#070d19] px-4 py-2 flex items-center justify-between text-xs text-slate-400 border-b border-[#16263f]">
+        <div className="bg-[#070d19] px-4 py-2 flex items-center justify-between text-xs text-slate-400 border-b border-[#16263f] shrink-0">
           <span>
             Thể thức: <b className="text-cyan-300">{rule.setsCount} Set</b> (Chạm {rule.pointsPerSet} điểm
             {rule.deuceEnabled ? `, deuce trần ${rule.maxPoints}` : ''})
@@ -151,12 +151,12 @@ export const ScoreModal: React.FC<Props> = ({ match, isOpen, onClose, onSave }) 
         </div>
 
         {/* Body Bàn Nhập Điểm */}
-        <div className="p-5 space-y-5">
+        <div className="p-3.5 sm:p-5 space-y-4 sm:space-y-5 overflow-y-auto flex-1">
           {/* 2 Đội & Trạng Thái Thắng Cuộc */}
-          <div className="grid grid-cols-2 gap-3 text-center items-center">
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-3 text-center items-center">
             {/* Đội A */}
             <div
-              className={`p-3 rounded-2xl border transition ${
+              className={`p-2.5 sm:p-3 rounded-2xl border transition ${
                 winnerId === workingMatch.teamA?.id
                   ? 'bg-cyan-950/60 border-cyan-400 ring-2 ring-cyan-400/30 shadow-[0_0_15px_rgba(0,229,255,0.2)]'
                   : 'bg-[#091120] border-[#16263f]'
@@ -180,7 +180,7 @@ export const ScoreModal: React.FC<Props> = ({ match, isOpen, onClose, onSave }) 
 
             {/* Đội B */}
             <div
-              className={`p-3 rounded-2xl border transition ${
+              className={`p-2.5 sm:p-3 rounded-2xl border transition ${
                 winnerId === workingMatch.teamB?.id
                   ? 'bg-cyan-950/60 border-cyan-400 ring-2 ring-cyan-400/30 shadow-[0_0_15px_rgba(0,229,255,0.2)]'
                   : 'bg-[#091120] border-[#16263f]'
@@ -221,13 +221,13 @@ export const ScoreModal: React.FC<Props> = ({ match, isOpen, onClose, onSave }) 
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 items-center">
+                <div className="grid grid-cols-2 gap-2 sm:gap-4 items-center">
                   {/* Điều khiển điểm Đội A */}
-                  <div className="flex items-center justify-center gap-2">
+                  <div className="flex items-center justify-center gap-1 sm:gap-2">
                     <button
                       type="button"
                       onClick={() => updateSetScore(setIdx, -1, 0)}
-                      className="w-8 h-8 rounded-lg bg-[#121f33] border border-[#1d3252] font-black text-slate-300 hover:text-white hover:bg-[#1a2b45] flex items-center justify-center cursor-pointer"
+                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#121f33] border border-[#1d3252] font-black text-slate-300 hover:text-white hover:bg-[#1a2b45] flex items-center justify-center cursor-pointer text-sm sm:text-base shrink-0"
                     >
                       -
                     </button>
@@ -239,23 +239,23 @@ export const ScoreModal: React.FC<Props> = ({ match, isOpen, onClose, onSave }) 
                       onChange={(e) =>
                         handleDirectScoreChange(setIdx, 'teamA', parseInt(e.target.value, 10))
                       }
-                      className="w-14 h-12 text-center text-2xl font-black bg-[#070d19] border-2 border-cyan-500 rounded-xl text-white focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="w-11 sm:w-14 h-10 sm:h-12 text-center text-xl sm:text-2xl font-black bg-[#070d19] border-2 border-cyan-500 rounded-xl text-white focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                     <button
                       type="button"
                       onClick={() => updateSetScore(setIdx, 1, 0)}
-                      className="w-8 h-8 rounded-lg bg-cyan-600 hover:bg-cyan-500 font-black text-black flex items-center justify-center shadow-md shadow-cyan-600/20 cursor-pointer"
+                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-cyan-600 hover:bg-cyan-500 font-black text-black flex items-center justify-center shadow-md shadow-cyan-600/20 cursor-pointer text-sm sm:text-base shrink-0"
                     >
                       +
                     </button>
                   </div>
 
                   {/* Điều khiển điểm Đội B */}
-                  <div className="flex items-center justify-center gap-2">
+                  <div className="flex items-center justify-center gap-1 sm:gap-2">
                     <button
                       type="button"
                       onClick={() => updateSetScore(setIdx, 0, -1)}
-                      className="w-8 h-8 rounded-lg bg-[#121f33] border border-[#1d3252] font-black text-slate-300 hover:text-white hover:bg-[#1a2b45] flex items-center justify-center cursor-pointer"
+                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#121f33] border border-[#1d3252] font-black text-slate-300 hover:text-white hover:bg-[#1a2b45] flex items-center justify-center cursor-pointer text-sm sm:text-base shrink-0"
                     >
                       -
                     </button>
@@ -267,12 +267,12 @@ export const ScoreModal: React.FC<Props> = ({ match, isOpen, onClose, onSave }) 
                       onChange={(e) =>
                         handleDirectScoreChange(setIdx, 'teamB', parseInt(e.target.value, 10))
                       }
-                      className="w-14 h-12 text-center text-2xl font-black bg-[#070d19] border-2 border-cyan-500 rounded-xl text-white focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="w-11 sm:w-14 h-10 sm:h-12 text-center text-xl sm:text-2xl font-black bg-[#070d19] border-2 border-cyan-500 rounded-xl text-white focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                     <button
                       type="button"
                       onClick={() => updateSetScore(setIdx, 0, 1)}
-                      className="w-8 h-8 rounded-lg bg-cyan-600 hover:bg-cyan-500 font-black text-black flex items-center justify-center shadow-md shadow-cyan-600/20 cursor-pointer"
+                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-cyan-600 hover:bg-cyan-500 font-black text-black flex items-center justify-center shadow-md shadow-cyan-600/20 cursor-pointer text-sm sm:text-base shrink-0"
                     >
                       +
                     </button>
@@ -326,7 +326,7 @@ export const ScoreModal: React.FC<Props> = ({ match, isOpen, onClose, onSave }) 
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-4 border-t border-[#16263f] bg-[#091120]">
+        <div className="flex items-center justify-between p-4 border-t border-[#16263f] bg-[#091120] shrink-0">
           <button
             type="button"
             onClick={onClose}
