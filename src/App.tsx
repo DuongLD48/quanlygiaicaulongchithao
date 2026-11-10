@@ -256,8 +256,9 @@ const TournamentDashboard: React.FC = () => {
 
         {/* Category Pills Selector */}
         <CategoryManager
-          selectedCategoryId={activeCategory?.id || ''}
+          selectedCategoryId={selectedCategoryId || activeCategory?.id || ''}
           onSelectCategory={setSelectedCategoryId}
+          showAllOption={activeTab === 'FIXTURES_ADMIN'}
         />
 
         {/* Dynamic Tab Body */}
@@ -284,7 +285,11 @@ const TournamentDashboard: React.FC = () => {
             )}
 
             {isAdmin && activeTab === 'FIXTURES_ADMIN' && (
-              <FixtureManager category={activeCategory} />
+              <FixtureManager
+                category={activeCategory}
+                selectedCategoryId={selectedCategoryId}
+                onSelectCategory={setSelectedCategoryId}
+              />
             )}
 
             {isAdmin && activeTab === 'TEAMS_GROUPS' && (

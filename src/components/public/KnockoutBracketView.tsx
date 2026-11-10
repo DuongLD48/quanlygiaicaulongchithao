@@ -180,15 +180,7 @@ export const KnockoutBracketView: React.FC<Props> = ({ category }) => {
               }`}
             >
               <div className="flex items-center gap-2 min-w-0 flex-1">
-                <span
-                  className={`w-6 h-6 rounded-md font-black text-[11px] flex items-center justify-center shrink-0 ${
-                    teamAWon
-                      ? 'bg-cyan-500 text-black shadow-sm shadow-cyan-500/40'
-                      : 'bg-[#121f33] text-cyan-400 border border-[#1f3554]'
-                  }`}
-                >
-                  {teamAName.substring(0, 3)}
-                </span>
+                {teamAWon && <Trophy className="w-3.5 h-3.5 text-amber-400 shrink-0" />}
                 <div className="min-w-0 flex-1">
                   <span
                     className={`text-xs block truncate ${
@@ -244,15 +236,7 @@ export const KnockoutBracketView: React.FC<Props> = ({ category }) => {
               }`}
             >
               <div className="flex items-center gap-2 min-w-0 flex-1">
-                <span
-                  className={`w-6 h-6 rounded-md font-black text-[11px] flex items-center justify-center shrink-0 ${
-                    teamBWon
-                      ? 'bg-cyan-500 text-black shadow-sm shadow-cyan-500/40'
-                      : 'bg-[#121f33] text-cyan-400 border border-[#1f3554]'
-                  }`}
-                >
-                  {teamBName.substring(0, 3)}
-                </span>
+                {teamBWon && <Trophy className="w-3.5 h-3.5 text-amber-400 shrink-0" />}
                 <div className="min-w-0 flex-1">
                   <span
                     className={`text-xs block truncate ${

@@ -7,11 +7,13 @@ import { Plus, Edit2, Trash2, Sliders, Trophy, Check, X } from 'lucide-react';
 interface Props {
   selectedCategoryId: string;
   onSelectCategory: (id: string) => void;
+  showAllOption?: boolean;
 }
 
 export const CategoryManager: React.FC<Props> = ({
   selectedCategoryId,
   onSelectCategory,
+  showAllOption = false,
 }) => {
   const { tournament, saveTournament, isAdmin, isRealtimeConnected, connectionError } = useTournament();
   const [isAddingCategory, setIsAddingCategory] = useState(false);
@@ -171,6 +173,19 @@ export const CategoryManager: React.FC<Props> = ({
 
       {/* Category Pills */}
       <div className="flex flex-wrap gap-2">
+        {showAllOption && (
+          <button
+            type="button"
+            onClick={() => onSelectCategory('ALL')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition border cursor-pointer ${
+              selectedCategoryId === 'ALL'
+                ? 'bg-cyan-500 text-black border-cyan-400 shadow-[0_0_15px_rgba(0,229,255,0.3)] font-black'
+                : 'bg-[#091120] hover:bg-[#11233e] text-slate-300 border-[#192b45]'
+            }`}
+          >
+            Tất Cả
+          </button>
+        )}
         {tournament.categories.map((cat) => {
           const isSelected = cat.id === selectedCategoryId;
           const isEditing = editingCatId === cat.id;
