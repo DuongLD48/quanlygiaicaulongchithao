@@ -167,6 +167,11 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
     e.preventDefault();
     if (!editingMatch) return;
 
+    if (!editingMatch.matchCode.trim()) {
+      alert('Vui lòng nhập mã trận đấu!');
+      return;
+    }
+
     const idx = category.knockoutMatches.findIndex((m) => m.id === editingMatch.id);
     if (idx !== -1) {
       const matchedStage = knockoutStages.find((s) => s.label === editingMatch.roundName);
@@ -713,7 +718,8 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
           >
             <div className="flex items-center justify-between pb-2 border-b border-[#16263f]">
               <h4 className="font-bold text-sm text-white">
-                Chỉnh Sửa Trận <span className="text-cyan-400">{editingMatch.roundName}</span>
+                Chỉnh Sửa Trận <span className="text-cyan-400 font-mono">{editingMatch.matchCode}</span>
+                {editingMatch.roundName && <span className="text-slate-400 font-normal ml-1.5">({editingMatch.roundName})</span>}
               </h4>
               <button
                 type="button"
@@ -722,6 +728,21 @@ export const KnockoutManager: React.FC<Props> = ({ category }) => {
               >
                 <X className="w-4 h-4" />
               </button>
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-slate-300 block mb-1">Mã trận đấu</label>
+              <input
+                type="text"
+                value={editingMatch.matchCode}
+                onChange={(e) => {
+                  editingMatch.matchCode = e.target.value;
+                  setEditingMatch(Match.fromJSON(editingMatch.toJSON()));
+                }}
+                className="w-full px-3 py-2 bg-[#070d19] border border-[#1d3252] rounded-xl text-xs font-mono font-bold text-white focus:border-cyan-400 focus:outline-none"
+                placeholder="VD: DN-TK-01, DNu-BK-01,..."
+                required
+              />
             </div>
 
             <div>
